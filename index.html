@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<title>SupplyMatch — совместные закупки и доставка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Светлая тема, крупный шрифт и большие кнопки — удобно пожилым людям */
+:root{--bg:#ffffff;--soft:#f4f6f1;--ink:#111a13;--mute:#3f4a42;--line:#d5dccf;--brand:#17692f;--brand-2:#e5f2e8;--acc:#c2410c;--acc-2:#fff0e6;--gold:#a86f00;--bad:#b42318;--bad-2:#fdecea;--wa:#128c4a;color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:90px;-webkit-tap-highlight-color:rgba(23,105,47,.15)}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.55 Inter,system-ui,sans-serif;padding-bottom:env(safe-area-inset-bottom,0px)}
+a{color:inherit}
+h1,h2,h3{margin:0;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:clamp(32px,5.4vw,50px);font-weight:800}
+h2{font-size:clamp(26px,3.4vw,34px);font-weight:800;margin-bottom:18px}
+h3{font-size:21px;font-weight:700}
+p{margin:0}
+:focus-visible{outline:4px solid #f59e0b;outline-offset:2px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 16px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sr:focus{position:fixed;left:16px;top:16px;width:auto;height:auto;clip:auto;z-index:60;background:#fff;padding:12px 18px;border-radius:12px;font-weight:700}
+
+/* шапка */
+.top{position:sticky;top:0;z-index:10;background:#fff;border-bottom:2px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px;min-height:72px}
+.logo{font-weight:800;font-size:24px;text-decoration:none;letter-spacing:-.02em;margin-right:auto;white-space:nowrap}
+.logo span{color:var(--brand)}
+nav.main{display:flex;gap:2px}
+nav.main a{text-decoration:none;padding:10px 11px;border-radius:12px;color:var(--mute);font-weight:600;font-size:17px;white-space:nowrap}
+nav.main a:hover{background:var(--soft);color:var(--ink)}
+nav.main a.on{background:var(--brand-2);color:var(--brand)}
+.hbtn{display:inline-flex;align-items:center;border:2px solid var(--line);background:#fff;border-radius:12px;min-height:48px;padding:8px 14px;font:700 16px Inter,system-ui,sans-serif;cursor:pointer;color:var(--ink);white-space:nowrap;text-decoration:none;max-width:200px;overflow:hidden;text-overflow:ellipsis;touch-action:manipulation}
+.hbtn.help{background:var(--acc);border-color:var(--acc);color:#fff}
+.hbtn.acc.in{border-color:var(--brand);color:var(--brand)}
+#menuBtn{display:none}
+
+/* мобильное меню */
+#menu{position:fixed;inset:0;background:#fff;z-index:30;padding:16px;overflow:auto;overscroll-behavior:contain;display:none}
+#menu.open{display:block}
+body:has(#menu.open){overflow:hidden}
+#menu .mtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+#menu a.mi{display:flex;align-items:center;gap:16px;text-decoration:none;font-size:22px;font-weight:700;padding:16px 18px;border:2px solid var(--line);border-radius:16px;margin-bottom:10px}
+#menu a.mi i{font-style:normal;font-size:28px}
+#menu a.mi.on{border-color:var(--brand);background:var(--brand-2);color:var(--brand)}
+
+main{padding-top:32px;padding-bottom:96px;min-height:60vh}
+section{margin-top:56px}
+
+/* кнопки и поля */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:14px;min-height:56px;padding:14px 24px;background:var(--brand);color:#fff;font:700 18px Inter,system-ui,sans-serif;cursor:pointer;text-decoration:none;text-align:center;touch-action:manipulation;transition:filter .15s}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.btn.orange{background:var(--acc)}
+.btn.red{background:#fff;color:var(--bad);border:2px solid #f3b4ae}
+.btn.big{min-height:72px;font-size:21px;padding:18px 28px;border-radius:18px}
+.btn.wide{width:100%}
+.btn.sm{min-height:48px;padding:10px 16px;font-size:16px;border-radius:12px}
+.btn:disabled{background:#e9ede5;color:var(--mute);cursor:default;filter:none;border:0}
+.link{background:none;border:0;padding:4px;color:var(--acc);font:700 18px Inter,system-ui,sans-serif;text-decoration:underline;cursor:pointer}
+input,select{width:100%;font:inherit;font-size:19px;color:inherit;background:#fff;border:2px solid var(--line);border-radius:12px;min-height:56px;padding:12px 14px;margin-top:8px}
+input:focus,select:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(--brand-2)}
+input[aria-invalid=true]{border-color:var(--bad)}
+label{display:block;font-size:17px;color:var(--ink);font-weight:600}
+.hint{display:block;font-weight:400;font-size:15px;color:var(--mute)}
+.fgrid{display:grid;gap:18px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.err{display:none;background:var(--bad-2);color:var(--bad);border-radius:12px;padding:12px 16px;font-weight:600}
+.err.show{display:block}
+
+.panel{background:#fff;border:2px solid var(--line);border-radius:20px;padding:26px}
+.panel.soft{background:var(--soft);border-color:transparent}
+.narrow{max-width:560px;margin:0 auto}
+.meta{color:var(--mute);font-size:17px}
+.lead{color:var(--mute);font-size:20px;max-width:620px;margin-top:14px}
+.eyebrow{display:inline-block;background:var(--brand-2);color:var(--brand);font-weight:700;font-size:16px;padding:6px 14px;border-radius:99px;margin-bottom:18px}
+.tag{display:inline-block;background:var(--brand-2);color:var(--brand);border-radius:8px;padding:3px 10px;font-size:15px;font-weight:700;margin:4px 6px 0 0}
+.save{background:var(--acc-2);color:var(--acc);font-weight:800;font-size:16px;padding:3px 10px;border-radius:8px}
+.badge{display:inline-block;border-radius:99px;padding:4px 12px;font-size:15px;font-weight:700;background:var(--soft);color:var(--mute)}
+.badge.open{background:var(--brand-2);color:var(--brand)}
+.badge.full,.badge.ready{background:#fff4d6;color:#7a5200}
+.badge.shipped{background:#e3effd;color:#1d4f91}
+.badge.done{background:var(--brand);color:#fff}
+.badge.cancelled{background:var(--bad-2);color:var(--bad)}
+.stars{color:var(--gold);font-weight:800;white-space:nowrap}
+.head{margin-bottom:28px}
+.empty{padding:32px;text-align:center;border:2px dashed var(--line);border-radius:18px;color:var(--mute)}
+.note{font-size:16px;color:var(--mute);margin-top:12px}
+.num{font-variant-numeric:tabular-nums}
+
+/* главная */
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center}
+.cta{display:grid;gap:12px;margin-top:28px;max-width:520px}
+.helpline{margin-top:14px;font-size:18px;color:var(--mute)}
+.kpis{display:flex;gap:32px;margin-top:28px;flex-wrap:wrap}
+.kpis b{display:block;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums}
+.kpis span{font-size:16px;color:var(--mute)}
+.flow{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--soft);border-radius:24px;padding:28px 18px}
+.node{flex:1;text-align:center}
+.node span{display:grid;place-items:center;width:84px;height:84px;margin:0 auto 10px;border-radius:50%;background:#fff;border:2px solid var(--line);font-size:42px}
+.node b{display:block;font-size:19px}
+.node small{display:block;font-size:15px;color:var(--mute)}
+.arr{font-size:30px;color:var(--brand);font-weight:800;flex:none}
+.flow-note{margin-top:14px;text-align:center;font-weight:600}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step b{width:52px;height:52px;border-radius:14px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:800;margin-bottom:16px}
+.step p,.trust p{color:var(--mute);margin-top:10px}
+.trust .ic{font-size:40px;line-height:1;margin-bottom:12px}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.unit{display:flex;align-items:center;gap:10px}.unit span{margin-top:8px;font-weight:700;min-width:28px}
+.res-row{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:2px solid var(--line)}
+.res-row b{white-space:nowrap;font-variant-numeric:tabular-nums}
+.res-big{background:var(--brand-2);border-radius:16px;padding:18px 20px;margin-top:12px}
+.res-big b{display:block;font-size:36px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
+.faq details{border:2px solid var(--line);border-radius:16px;margin-bottom:10px;background:#fff}
+.faq summary{cursor:pointer;padding:18px 20px;font-weight:700;font-size:19px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:26px;line-height:1;color:var(--brand)}
+.faq details[open] summary::after{content:"−"}
+.faq details p{padding:0 20px 18px;color:var(--mute)}
+
+/* карточки */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+.pool{background:#fff;border:2px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.pool .pic{font-size:52px;line-height:1}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.pool h3{font-size:25px}
+.price b{font-size:28px;font-weight:800}
+.price s{color:var(--mute);margin-left:8px;font-size:17px}
+.prog{height:16px;background:#e3e8de;border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--brand);border-radius:99px;transform-origin:left;transition:transform .4s}
+.left{font-weight:700}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.chips button{border:2px solid var(--line);background:#fff;border-radius:99px;min-height:50px;padding:8px 18px;font:600 17px Inter,system-ui,sans-serif;cursor:pointer;color:var(--ink)}
+.chips button[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff}
+.sbar{display:flex;gap:10px;margin-top:8px}
+.sbar input{margin-top:0}
+.sbar .btn{flex:none}
+.ex{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ex button{background:#fff;border-radius:99px;padding:8px 14px;font:500 16px Inter,system-ui,sans-serif;cursor:pointer;color:var(--ink);border:2px solid var(--line)}
+.match{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:#fff;border:2px solid var(--brand);border-radius:18px;padding:18px;margin-top:12px}
+.score{font-size:30px;font-weight:800;color:var(--brand)}
+.pcard{display:flex;gap:16px;text-align:left;width:100%;background:#fff;border:2px solid var(--line);border-radius:20px;padding:20px;cursor:pointer;font:inherit;color:inherit}
+.pcard:hover{border-color:var(--brand)}
+.av{flex:none;width:64px;height:64px;border-radius:16px;background:var(--soft);display:grid;place-items:center;font-size:34px}
+.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+
+/* вход и регистрация */
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.role{border:2px solid var(--line);background:#fff;border-radius:18px;padding:18px;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.role b{display:block;font-size:20px}
+.role span{display:block;color:var(--mute);font-size:16px;margin-top:4px}
+.role[aria-pressed=true]{border-color:var(--brand);background:var(--brand-2)}
+.demo{background:#fff8e6;border:2px dashed #e7c46a;border-radius:16px;padding:16px 18px;font-size:16px}
+
+/* продать */
+.two{display:grid;grid-template-columns:1fr 1.3fr;gap:20px;align-items:start}
+.helpcard{background:var(--acc-2);border:2px solid #fed7aa;border-radius:20px;padding:26px}
+.helpcard .btn{width:100%;margin-top:12px}
+.phone{font-size:26px;font-weight:800;margin:14px 0 4px}
+
+/* доставка */
+.counter{display:flex;align-items:center;gap:10px;margin-top:8px}
+.counter button{width:56px;height:56px;border-radius:14px;border:2px solid var(--line);background:#fff;font:800 26px Inter,system-ui,sans-serif;cursor:pointer;color:var(--ink)}
+.counter output{min-width:56px;text-align:center;font-size:28px;font-weight:800}
+.route{list-style:none;margin:14px 0 0;padding:0}
+.route li{position:relative;padding:0 0 18px 34px}
+.route li::before{content:"";position:absolute;left:6px;top:6px;width:16px;height:16px;border-radius:50%;background:var(--brand)}
+.route li::after{content:"";position:absolute;left:13px;top:24px;bottom:2px;width:3px;background:var(--line)}
+.route li:last-child::after{display:none}
+.route li:first-child::before{background:var(--acc)}
+.list{margin:12px 0 0;padding-left:24px;display:grid;gap:8px}
+
+/* кабинет */
+.card{background:#fff;border:2px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px}
+.card.cancelled{background:#fcfcfb;opacity:.8}
+.stp{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:14px 0}
+.stp span{padding:10px 6px;border-radius:10px;background:#eef1ea;font-size:15px;font-weight:600;text-align:center;color:var(--mute)}
+.stp span.on{background:var(--brand);color:#fff}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.rate{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.rate button{width:52px;height:52px;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:28px;cursor:pointer;color:var(--gold)}
+.rate button:hover,.rate button:focus-visible{background:#fff4d6}
+.buyers{margin:10px 0 0;padding:0;list-style:none}
+.buyers li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:2px solid var(--soft);flex-wrap:wrap}
+
+/* окно */
+dialog{border:0;border-radius:22px;padding:26px;max-width:600px;width:calc(100% - 24px);max-height:calc(100% - 24px);background:#fff;color:var(--ink);overscroll-behavior:contain}
+dialog::backdrop{background:rgba(10,20,10,.5)}
+.dlg-act{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.okdlg{text-align:center}
+.okic{width:96px;height:96px;margin:4px auto 18px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:52px;font-weight:800}
+.okic.info{background:var(--acc)}
+.okdlg p{font-size:20px;color:var(--mute);margin:-6px 0 22px}
+.rev{border-top:2px solid var(--line);padding:12px 0}
+
+/* кнопка WhatsApp */
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;align-items:center;gap:10px;background:var(--wa);color:#fff;border:0;border-radius:99px;min-height:64px;padding:12px 22px 12px 16px;font:700 18px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.18);touch-action:manipulation}
+.fab span{font-size:30px;line-height:1}
+
+footer{border-top:2px solid var(--line);padding:32px 0 110px;color:var(--mute);font-size:16px;background:var(--soft)}
+.fgrid4{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:24px}
+footer a{display:block;text-decoration:none;padding:4px 0;color:var(--ink);font-weight:600}
+footer a:hover{text-decoration:underline}
+footer b{display:block;color:var(--ink);margin-bottom:8px}
+
+.banner{background:#fff4d6;border:2px solid #f0c75e;border-radius:14px;padding:12px 16px;margin-top:16px;font-weight:600}
+#toast{position:fixed;left:50%;top:calc(84px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:16px 24px;border-radius:14px;font-size:18px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;max-width:calc(100% - 32px);text-align:center}
+#toast.show{opacity:1}
+
+@media (max-width:1060px){
+  nav.main{display:none}
+  #menuBtn{display:inline-flex}
+}
+@media (max-width:760px){
+  .hero,.calc,.two,.filters,.steps,.fgrid4,.roles{grid-template-columns:1fr}
+  .hero{gap:32px}
+  section{margin-top:44px}
+  .panel{padding:20px}
+  .sbar{flex-direction:column}
+  .match{grid-template-columns:1fr}
+  .logo{font-size:21px}
+  .hbtn{padding:8px 10px;font-size:15px}
+  .hbtn.help,.hbtn.lang{display:none}
+  .stp span{font-size:13px;padding:8px 2px}
+  .node span{width:64px;height:64px;font-size:32px}
+  .node b{font-size:16px}.node small{font-size:13px}
+  .arr{font-size:22px}
+  .flow{padding:20px 10px}
+  .fab{padding:12px;min-height:60px}
+  .fab b{display:none}
+}
+@media (max-width:400px){.f2{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<a class="sr" href="#app">Перейти к содержимому</a>
+<header class="top"><div class="wrap bar">
+  <a class="logo" href="#home" translate="no" aria-label="SupplyMatch — на главную">Supply<span>Match</span></a>
+  <nav class="main" id="nav" aria-label="Разделы"></nav>
+  <button class="hbtn lang" id="lang" type="button"></button>
+  <a class="hbtn acc" id="accBtn" href="#login"></a>
+  <button class="hbtn help" type="button" data-help id="helpBtn"></button>
+  <button class="hbtn" type="button" id="menuBtn" aria-controls="menu" aria-expanded="false"></button>
+</div></header>
+<div id="menu" role="dialog" aria-modal="true" aria-label="Меню"></div>
+<div class="wrap" id="banner"></div>
+<main class="wrap" id="app" tabindex="-1"></main>
+<footer><div class="wrap" id="foot"></div></footer>
+<button class="fab" type="button" data-help id="fab"><span aria-hidden="true">💬</span><b></b></button>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== Подключение к базе Supabase =====
+   Вставьте Project URL и anon public key (Supabase → Settings → API).
+   Пусто — сайт работает в оффлайн-демо режиме: данные только в этом браузере.
+   Открыть оффлайн-демо при заполненных ключах: добавьте к адресу ?offline */
+const SUPABASE_URL="https://oumshloaaalpuwqmkjbc.supabase.co";
+const SUPABASE_KEY="sb_publishable_WfXmM_bublqjSpmRQRUBMg_cs7yuDFD"; // публичный ключ, его можно хранить в коде
+const EMAIL_DOMAIN="phone.supplymatch.example"; // служебный логин из номера телефона, письма не отправляются
+const SUPABASE_JS="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+
+/* ===== Демо-данные (условные, заменить данными из интервью) ===== */
+const CAT={veg:{ru:"Овощи",kz:"Көкөніс",i:"🥔"},fruit:{ru:"Фрукты и бахча",kz:"Жеміс және бақша",i:"🍎"},dairy:{ru:"Молочное",kz:"Сүт өнімдері",i:"🥛"},meat:{ru:"Мясо",kz:"Ет",i:"🥩"},grain:{ru:"Крупы и мука",kz:"Жарма және ұн",i:"🌾"},honey:{ru:"Мёд и домашнее",kz:"Бал және үй өнімдері",i:"🍯"}};
+const TYPE_IC={farm:"👨‍🌾",home:"👵",whole:"🏢"};
+// расстояния до Тараза примерные
+const DIST=[
+ {id:"taraz",ru:"Тараз",kz:"Тараз",km:0},
+ {id:"sarykemer",ru:"Байзакский р-н (Сарыкемер)",kz:"Байзақ ауданы (Сарыкемер)",km:15},
+ {id:"asa",ru:"Жамбылский р-н (Аса)",kz:"Жамбыл ауданы (Аса)",km:25},
+ {id:"zhualy",ru:"Жуалынский р-н",kz:"Жуалы ауданы",km:90},
+ {id:"karatau",ru:"Таласский р-н (Каратау)",kz:"Талас ауданы (Қаратау)",km:110},
+ {id:"merke",ru:"Меркенский р-н",kz:"Меркі ауданы",km:150},
+ {id:"kulan",ru:"Р-н Т. Рыскулова (Кулан)",kz:"Т. Рысқұлов ауданы (Құлан)",km:190},
+ {id:"shu",ru:"Шуский р-н",kz:"Шу ауданы",km:270}
+];
+const PRODS=[
+ {id:"p1",name:"Ферма «Береке»",type:"farm",dist:"sarykemer",cats:["veg"],goods:"картофель лук морковь капуста",desc:{ru:"Семейная ферма, своё поле.",kz:"Отбасылық ферма, өз егістігі бар."},rev:[["Магазин «Айгерим»","Картошка чистая, крупная.",5],["Минимаркет «Достық»","Привезли вовремя.",5]],deals:64},
+ {id:"p2",name:"Ата Серік",type:"home",dist:"asa",cats:["veg","honey"],goods:"помидоры огурцы зелень мёд",desc:{ru:"Свой огород и пасека. Заявки принимает внук по телефону.",kz:"Өз бақшасы мен омартасы бар. Өтінімді немересі телефонмен қабылдайды."},rev:[["Кафе «Арай»","Мёд настоящий, помидоры сладкие.",5]],deals:12},
+ {id:"p3",name:"Апа Гүлнар",type:"home",dist:"zhualy",cats:["dairy"],goods:"курт сметана масло творог",desc:{ru:"Домашняя молочка из своего хозяйства.",kz:"Өз шаруашылығынан үй сүт өнімдері."},rev:[["Магазин «Айгерим»","Курт расходится за день.",5],["Минимаркет «Нұр»","Иногда мало объёма.",4]],deals:21},
+ {id:"p4",name:"КХ «Мерке Бақ»",type:"farm",dist:"merke",cats:["fruit"],goods:"яблоки абрикосы арбуз дыня",desc:{ru:"Сады и бахча, сезонные фрукты.",kz:"Бау-бақша, маусымдық жемістер."},rev:[["Минимаркет «Достық»","Яблоки отличные.",5],["Магазин «Береке»","Арбузы привезли с опозданием.",4]],deals:38},
+ {id:"p5",name:"ТОО «Жамбыл Ет»",type:"whole",dist:"taraz",cats:["meat"],goods:"говядина баранина фарш халяль",desc:{ru:"Оптовый поставщик мяса, халяль.",kz:"Еттің көтерме жеткізушісі, халал."},rev:[["Донерная «Тоқаш»","Стабильное качество.",5],["Кафе «Арай»","Цена выше рынка, но надёжно.",4]],deals:140},
+ {id:"p6",name:"КХ «Шу Дала»",type:"farm",dist:"shu",cats:["grain","veg"],goods:"мука рис гречка лук",desc:{ru:"Крупное хозяйство, крупы и лук.",kz:"Ірі шаруашылық, жарма мен пияз."},rev:[["Магазин «Береке»","Мука хорошая.",4]],deals:52},
+ {id:"p7",name:"Молочная ферма «Ақ Бұлақ»",type:"farm",dist:"karatau",cats:["dairy"],goods:"молоко айран кефир сметана",desc:{ru:"Своё стадо, ежедневная дойка.",kz:"Өз табыны, күнделікті сауын."},rev:[["Минимаркет «Нұр»","Молоко свежее каждый день.",5],["Магазин «Айгерим»","Айран вкусный.",5]],deals:88}
+];
+// retail — цена мелким оптом/на рынке, price — цена партии, extra — демо-магазины, уже вошедшие в сбор
+const POOLS=[
+ {id:"g1",prod:"p1",item:{ru:"Картофель",kz:"Картоп"},cat:"veg",unit:"кг",target:2000,got:1360,retail:190,price:140,days:2,extra:5},
+ {id:"g2",prod:"p7",item:{ru:"Молоко",kz:"Сүт"},cat:"dairy",unit:"л",target:600,got:510,retail:420,price:330,days:1,extra:6},
+ {id:"g3",prod:"p4",item:{ru:"Яблоки",kz:"Алма"},cat:"fruit",unit:"кг",target:1000,got:420,retail:450,price:350,days:4,extra:3},
+ {id:"g4",prod:"p5",item:{ru:"Говядина",kz:"Сиыр еті"},cat:"meat",unit:"кг",target:300,got:90,retail:3800,price:3300,days:5,extra:2},
+ {id:"g5",prod:"p6",item:{ru:"Лук",kz:"Пияз"},cat:"veg",unit:"кг",target:1500,got:700,retail:160,price:115,days:3,extra:4},
+ {id:"g6",prod:"p3",item:{ru:"Курт",kz:"Құрт"},cat:"dairy",unit:"кг",target:50,got:18,retail:6000,price:4800,days:6,extra:3}
+];
+// корни слов для умного подбора (рус + каз)
+const KW={veg:["овощ","картоф","картош","лук","морков","капуст","помидор","томат","огур","зелен","көкөніс","картоп","пияз","қызанақ","қияр","сәбіз"],fruit:["фрукт","яблок","абрикос","арбуз","дын","бахч","жеміс","алма","қарбыз","қауын","өрік"],dairy:["молок","молоч","айран","кефир","сметан","творог","курт","масл","сыр","сүт","құрт","қаймақ"],meat:["мяс","говяд","баран","фарш","кур","ет","еті","сиыр","қой"],grain:["мук","круп","рис","гречк","ұн","күріш","жарма"],honey:["мёд","мед","домашн","бал"]};
+// тариф доставки (демо): Газель до 1500 кг; комиссия сервиса 5%
+const COMM=.05,CAP=1500,DAY=864e5,trip=km=>km?3000+km*150:2000;
+
+/* ===== Тексты RU / KZ ===== */
+const L={
+ru:{
+ nav_home:"Главная",nav_pools:"Закупки",nav_prods:"Продавцы",nav_add:"Продать",nav_deliv:"Доставка",nav_cab:"Кабинет",
+ menu:"☰ Меню",menu_t:"Меню",close:"✕ Закрыть",help_btn:"📞 Помощь",lang_btn:"ҚАЗ",lang_full:"Қазақ тілі",login_btn:"Войти",logout:"Выйти",ok:"Хорошо",fab:"Помощь",
+ help_t:"Нужна помощь?",help_d:"Позвоните или отправьте голосовое сообщение в WhatsApp. Оператор всё сделает за вас бесплатно.",help_num:"номер оператора (демо)",call:"📞 Позвонить",wa:"💬 Написать в WhatsApp",t_demo:"Демо: здесь откроется звонок или WhatsApp",
+ h_eyebrow:"Тараз и Жамбылская область",
+ h_title:"Покупайте вместе — платите по оптовой цене",
+ h_lead:"Магазины собирают заказ вместе, сёла продают свой урожай, а мы привозим всё одной машиной.",
+ h_buy:"🛒 Хочу купить дешевле",h_sell:"🌾 Хочу продать урожай",h_help:"Не разобрались?",h_help_b:"Позвоните — поможем",
+ k_open:"открытых закупок",k_prods:"продавцов",k_save:"средняя экономия",
+ flow_v:"Село",flow_v_d:"фермер, частник",flow_t:"Одна машина",flow_t_d:"забирает всё сразу",flow_s:"Магазины",flow_s_d:"в Таразе",flow_note:"Доставку делим на всех — поэтому дешевле.",
+ hot:"🔥 Скоро соберутся",all_pools:"Все закупки →",
+ how_t:"Как это работает",
+ s1_t:"Выберите товар",s1_d:"Укажите, сколько нужно вашему магазину.",
+ s2_t:"Партия собирается",s2_d:"Партия — это один большой общий заказ нескольких магазинов. Поэтому цена оптовая.",
+ s3_t:"Привозим одной машиной",s3_d:"Машина забирает товар в селе и развозит по магазинам.",
+ trust_t:"Почему нам можно доверять",
+ tr1_t:"Деньги в безопасности",tr1_d:"Если партия не собралась — возвращаем всё.",
+ tr2_t:"Честные отзывы",tr2_d:"Оценку ставит только магазин, который получил товар.",
+ tr3_t:"Знаем каждого продавца",tr3_d:"Перед размещением звоним продавцу и проверяем товар.",
+ calc_t:"Сколько вы сэкономите",calc_d:"Выберите товар и сколько берёте за неделю.",
+ calc_item:"Товар",calc_week:"Сколько в неделю",
+ calc_now:"Сейчас, за месяц",calc_new:"С нами, за месяц",calc_inc:"уже с доставкой и нашей услугой",calc_res:"Экономия за месяц",
+ calc_note:"Цены демо. Замените их ценами из интервью с магазинами.",
+ faq_t:"Частые вопросы",
+ faq:[["Что будет, если партия не соберётся?","Сбор отменяется, и все деньги возвращаются магазинам. Ничего платить не нужно."],["Как платить?","Деньги замораживаются при заказе и уходят продавцу только после того, как магазин получил товар. В демо-версии оплаты нет."],["Кто везёт товар?","Местные водители по договору с сервисом. Одна машина забирает товар в селе и развозит по магазинам."],["Я не умею пользоваться сайтом. Что делать?","Нажмите «Помощь» или зелёную кнопку внизу экрана. Оператор всё сделает за вас по телефону или в WhatsApp."],["Сколько стоит услуга?","5% от стоимости товара плюс доставка по тарифу. Всё видно заранее, до подтверждения заказа."]],
+ left_to:"До оптовой цены осталось {n}",per:"за",left_days:"осталось {n} дн.",last_day:"последний день",members:"магазинов",join:"Купить вместе",
+ pst_open:"Идёт сбор",pst_full:"Партия собрана",pst_shipped:"В пути",pst_done:"Доставлено",pst_cancelled:"Сбор отменён",
+ btn_own:"Это ваш товар",
+ pools_t:"Совместные закупки",pools_d:"Присоединяйтесь к партии и платите оптовую цену.",
+ smart_t:"Что нужно вашему магазину?",smart_ph:"Например: 200 кг картошки",find:"🔍 Найти",
+ ex:["200 кг картошки","молоко и айран","говядина для кафе","яблоки"],
+ smart_res:"Подходит лучше всего",smart_none:"Ничего не нашли. Напишите товар проще, например «лук».",match:"подходит",
+ why_cat:"нужный вид товара",why_item:"тот самый товар",why_fill:"партия почти собрана",why_rate:"хорошие отзывы",why_near:"рядом с Таразом",why_vol:"хватит на ваш объём",why_save:"дешевле на {n}%",
+ all:"Все",none:"Ничего не нашли. Измените выбор выше.",
+ remain:"Ещё нужно набрать",already:"Вы уже берёте {n}. Можно добавить ещё.",amount:"Сколько вам нужно",
+ confirm:"✓ Купить вместе",cancel:"Отмена",
+ escrow:"Деньги ждут, пока партия соберётся и товар приедет. Не собралась — вернём всё. В демо оплаты нет.",
+ sum_goods:"Товар",sum_deliv:"Доставка (ваша доля)",sum_comm:"Наша услуга 5%",sum_total:"Итого",sum_saved:"Вы экономите",no_retail:"Рыночная цена не указана — экономию посчитать нельзя.",
+ err_kg:"Укажите число от 1 до {n}",
+ ok_join_t:"Вы в закупке!",ok_join_d:"Когда партия соберётся, статус изменится в кабинете. Деньги ждут до доставки.",ok_full_d:"Партия собрана! Продавец скоро отправит товар.",to_cab:"Открыть кабинет",
+ only_shops_t:"Покупают только магазины",only_shops_d:"Вы вошли как продавец. Чтобы покупать, войдите как магазин.",
+ prods_t:"Продавцы",prods_d:"Фермеры, частники и оптовики области.",
+ f_cat:"Что продают",f_dist:"Район",f_type:"Кто",
+ type_farm:"Фермер",type_home:"Частник",type_whole:"Оптовик",
+ km_to:"{n} км до Тараза",in_taraz:"в Таразе",deals:"сделок",no_rate:"пока без оценок",no_goods:"Товары скоро появятся",
+ reviews:"Отзывы магазинов",no_rev:"Пока нет отзывов",open_pools:"Открытые закупки",phone_login:"🔒 Войдите, чтобы увидеть телефон",demo_phone:"демо-номер",
+ add_t:"Продать урожай или товар",add_d:"Магазины Тараза увидят ваш товар и соберут партию.",
+ help_card_t:"Не хотите заполнять сами?",help_soon:"Скоро: отправите голосовое — ИИ сам сделает объявление.",
+ form_t:"Новое объявление",
+ seller_need_t:"Чтобы продавать, нужен аккаунт продавца",seller_need_d:"Это займёт минуту: имя, телефон и PIN-код из 4 цифр.",reg_seller:"🌾 Зарегистрироваться как продавец",have_acc:"У меня уже есть аккаунт",
+ shop_cant:"Вы вошли как магазин. Продавать может только аккаунт продавца — выйдите и войдите как продавец.",
+ a_item:"Что продаёте",a_item_ph:"Например: картофель",a_cat:"Вид товара",a_vol:"Сколько есть",a_unit:"Единица",
+ a_price:"Ваша цена за 1 кг или 1 л, ₸",a_retail:"Цена на рынке за 1 кг или 1 л, ₸",a_retail_h:"Если знаете. Так магазины увидят свою экономию.",a_days:"Сколько дней собирать заказ",days_n:"{n} дн.",a_go:"✓ Отправить объявление",
+ err_add:"Заполните товар, количество и цену",err_retail:"Цена на рынке должна быть выше вашей цены",
+ ok_add_t:"Объявление размещено!",ok_add_d:"Магазины уже видят ваш товар. Заказы появятся в кабинете.",
+ deliv_t:"Доставка",deliv_d:"Своя машина не нужна. Забираем из села и привозим в магазин. В общей машине платите только свою долю.",
+ d_from:"Откуда забрать",d_kg:"Вес груза, кг",d_shops:"Сколько магазинов в одной машине",
+ d_solo:"Отдельная машина только для вас",d_shared:"Ваша доля в общей машине",d_saved:"Экономия на доставке",d_trips:"Машин понадобится: {n}",
+ d_tariff:"Тариф (демо): 3 000 ₸ + 150 ₸ за км. Газель везёт до 1 500 кг. По Таразу: 2 000 ₸. Расстояния примерные.",
+ d_route:"Маршрут машины",d_shop:"Магазин {n}, Тараз",
+ earn_t:"Как зарабатывает сервис",earn:["5% с товара в закупке","Плата за доставку по тарифу","Позже: платное продвижение для оптовиков"],
+ hi:"Здравствуйте, {n}!",acc_shop:"Аккаунт магазина",acc_seller:"Аккаунт продавца",
+ cab_shop_d:"Ваши заказы и где они сейчас.",cab_seller_d:"Ваши объявления и заказы магазинов.",
+ cab_orders:"заказов",cab_spent:"потрачено",cab_saved:"сэкономлено",cab_empty:"Заказов пока нет.",go_pools:"Перейти к закупкам",
+ st0:"Сбор",st1:"Собрано",st2:"В пути",st3:"Получено",
+ ost_wait:"Идёт сбор партии",ost_ready:"Партия собрана, ждём отправки",ost_shipped:"Товар в пути",ost_done:"Получено",ost_cancelled:"Отменено — деньги возвращены",
+ seller:"Продавец",
+ add_more:"＋ Взять ещё",o_cancel:"Отказаться",o_cancel_q:"Отказаться от заказа? Деньги вернутся.",o_receive:"✓ Я получил товар",
+ rate:"Как прошла поставка?",rated:"Ваша оценка:",t_thanks:"Спасибо за оценку!",
+ rev_good:"Всё пришло вовремя, качество хорошее.",rev_mid:"Нормально, есть замечания.",rev_bad:"Были проблемы с поставкой.",
+ my_pools:"Мои объявления",add_new:"＋ Новое объявление",buyers:"Кто заказал",demo_buyers:"+ ещё {n} магазинов (демо)",no_buyers:"Пока никто не заказал",
+ p_ship:"🚚 Я отправил товар",p_cancel:"Отменить сбор",p_cancel_q:"Отменить сбор? Всем магазинам вернутся деньги.",p_received:"Магазины получили: {a} из {b}",
+ k_active:"идёт сбор",k_orders:"заказов от магазинов",k_rating:"мой рейтинг",seller_empty:"У вас пока нет объявлений.",
+ ok_ship_t:"Товар в пути!",ok_ship_d:"Магазины увидят это в кабинете и подтвердят получение.",t_cancelled:"Готово. Деньги возвращены",
+ login_t:"Вход",login_d:"Введите номер телефона и PIN-код из 4 цифр.",phone:"Номер телефона",pin:"PIN-код (4 цифры)",pin2:"Повторите PIN-код",do_login:"Войти",
+ no_acc:"Нет аккаунта?",to_reg:"Зарегистрироваться",forgot:"Забыли PIN-код?",forgot_b:"Позвоните — поможем",err_login:"Неверный номер или PIN-код",
+ demo_t:"Для проверки (демо)",demo_d:"Магазин: +7 700 000 00 01, PIN 1111. Продавец: +7 700 000 00 02, PIN 2222. У всех демо-продавцов PIN 2222.",
+ reg_t:"Регистрация",reg_d:"Кто вы?",role_shop:"🏪 У меня магазин или кафе",role_shop_d:"Хочу покупать дешевле",role_seller:"🌾 Я продаю свой товар",role_seller_d:"Фермер, частник или оптовик",
+ r_name_shop:"Название магазина",r_name_seller:"Ваше имя или название хозяйства",r_dist:"Где вы находитесь",r_type:"Кто вы",do_reg:"✓ Зарегистрироваться",have:"Уже есть аккаунт?",
+ err_name:"Напишите имя или название",err_phone:"Проверьте номер. Пример: +7 701 234 56 78",err_phone_used:"Этот номер уже зарегистрирован. Нажмите «Войти».",err_pin:"PIN-код — ровно 4 цифры",err_pin2:"PIN-коды не совпадают",
+ ok_reg_t:"Добро пожаловать!",ok_reg_shop:"Теперь можно покупать вместе с другими магазинами.",ok_reg_seller:"Теперь разместите первый товар.",ok_reg_go:"Разместить товар",ok_reg_go_shop:"Смотреть закупки",
+ new_desc:"Новый продавец на платформе.",
+ reset:"Сбросить демо-данные",reset_q:"Удалить все аккаунты и заказы и вернуть сайт к началу?",
+ foot_d:"Совместные закупки и доставка для магазинов Тараза и сёл Жамбылской области.",foot_sec:"Разделы",foot_help:"Помощь",foot_team:"Команда: Інжу и Бекарыс",
+ busy:"Подождите…",loading:"Загрузка…",err_t:"Не получилось",err_generic:"Что-то пошло не так. Обновите страницу и попробуйте ещё раз.",err_net:"Нет связи с интернетом. Проверьте подключение и попробуйте ещё раз.",err_confirm:"В Supabase включено подтверждение email. Выключите его: Authentication → Sign In / Providers → Email → Confirm email.",err_noprofile:"Регистрация не была завершена. Зарегистрируйтесь ещё раз с тем же номером и PIN-кодом.",err_closed:"Этот сбор уже закрыт. Страница обновлена.",err_own:"Свой товар покупать нельзя.",err_state:"Это действие уже выполнено или недоступно. Страница обновлена.",err_kg_race:"Пока вы выбирали, другие магазины уже взяли часть партии. Уменьшите объём.",
+ ok_ship_demo_d:"Партия собрана, и продавец уже отправил товар. Подтвердите получение в кабинете.",
+ offline_banner:"⚠️ Нет связи с базой. Включён оффлайн-демо режим: данные хранятся только в этом браузере.",
+ demo_cloud:"Зарегистрируйте магазин на одном устройстве и продавца на другом — заказы увидят оба. Демо-продавцы отправляют товар сами, как только партия собрана.",
+ foot_cloud:"Демо-версия для хакатона. Компании, цены и расстояния условные. Данные хранятся в общей базе.",
+ foot_demo:"Демо-версия для хакатона. Компании, цены и расстояния условные. Аккаунты хранятся только в этом браузере."
+},
+kz:{
+ nav_home:"Басты бет",nav_pools:"Сатып алу",nav_prods:"Сатушылар",nav_add:"Сату",nav_deliv:"Жеткізу",nav_cab:"Кабинет",
+ menu:"☰ Мәзір",menu_t:"Мәзір",close:"✕ Жабу",help_btn:"📞 Көмек",lang_btn:"РУС",lang_full:"Русский язык",login_btn:"Кіру",logout:"Шығу",ok:"Жақсы",fab:"Көмек",
+ help_t:"Көмек керек пе?",help_d:"Қоңырау шалыңыз немесе WhatsApp-қа дауыстық хабар жіберіңіз. Оператор бәрін сіз үшін тегін жасайды.",help_num:"оператор нөмірі (демо)",call:"📞 Қоңырау шалу",wa:"💬 WhatsApp-қа жазу",t_demo:"Демо: мұнда қоңырау немесе WhatsApp ашылады",
+ h_eyebrow:"Тараз және Жамбыл облысы",
+ h_title:"Бірге сатып алыңыз — көтерме бағамен төлеңіз",
+ h_lead:"Дүкендер тапсырысты бірге жинайды, ауылдар өнімін сатады, ал біз бәрін бір көлікпен жеткіземіз.",
+ h_buy:"🛒 Арзан сатып алғым келеді",h_sell:"🌾 Өнімімді сатқым келеді",h_help:"Түсінбедіңіз бе?",h_help_b:"Қоңырау шалыңыз — көмектесеміз",
+ k_open:"ашық сатып алу",k_prods:"сатушы",k_save:"орташа үнем",
+ flow_v:"Ауыл",flow_v_d:"фермер, жеке шаруа",flow_t:"Бір көлік",flow_t_d:"бәрін бірден алады",flow_s:"Дүкендер",flow_s_d:"Таразда",flow_note:"Жеткізу құнын бәріне бөлеміз — сондықтан арзан.",
+ hot:"🔥 Жақында жиналады",all_pools:"Барлық сатып алулар →",
+ how_t:"Бұл қалай жұмыс істейді",
+ s1_t:"Тауарды таңдаңыз",s1_d:"Дүкеніңізге қанша керек екенін көрсетіңіз.",
+ s2_t:"Партия жиналады",s2_d:"Партия — бірнеше дүкеннің бір үлкен ортақ тапсырысы. Сондықтан баға көтерме.",
+ s3_t:"Бір көлікпен жеткіземіз",s3_d:"Көлік тауарды ауылдан алып, дүкендерге таратады.",
+ trust_t:"Неге бізге сенуге болады",
+ tr1_t:"Ақшаңыз қауіпсіз",tr1_d:"Партия жиналмаса — бәрін қайтарамыз.",
+ tr2_t:"Адал пікірлер",tr2_d:"Бағаны тек тауарды алған дүкен қояды.",
+ tr3_t:"Әр сатушыны білеміз",tr3_d:"Орналастыру алдында сатушыға қоңырау шалып, тауарды тексереміз.",
+ calc_t:"Қанша үнемдейсіз",calc_d:"Тауарды және аптасына қанша алатыныңызды таңдаңыз.",
+ calc_item:"Тауар",calc_week:"Аптасына қанша",
+ calc_now:"Қазір, айына",calc_new:"Бізбен, айына",calc_inc:"жеткізу мен қызмет ақысы қосылған",calc_res:"Айына үнем",
+ calc_note:"Бағалар демо. Оларды дүкендермен сұхбаттағы бағалармен ауыстырыңыз.",
+ faq_t:"Жиі қойылатын сұрақтар",
+ faq:[["Партия жиналмаса не болады?","Жинау тоқтатылады, барлық ақша дүкендерге қайтарылады. Ештеңе төлеудің қажеті жоқ."],["Қалай төлеймін?","Ақша тапсырыс кезінде бұғатталып, дүкен тауарды алғаннан кейін ғана сатушыға өтеді. Демо нұсқада төлем жоқ."],["Тауарды кім тасиды?","Сервиспен келісім бойынша жергілікті жүргізушілер. Бір көлік тауарды ауылдан алып, дүкендерге таратады."],["Сайтты қолдана алмаймын. Не істеймін?","«Көмек» батырмасын немесе экранның төменгі жағындағы жасыл батырманы басыңыз. Оператор бәрін телефон немесе WhatsApp арқылы жасайды."],["Қызмет қанша тұрады?","Тауар құнының 5%-ы және тариф бойынша жеткізу. Бәрі тапсырысты растағанға дейін көрінеді."]],
+ left_to:"Көтерме бағаға дейін {n} қалды",per:"/",left_days:"{n} күн қалды",last_day:"соңғы күн",members:"дүкен",join:"Бірге сатып алу",
+ pst_open:"Жиналуда",pst_full:"Партия жиналды",pst_shipped:"Жолда",pst_done:"Жеткізілді",pst_cancelled:"Жинау тоқтатылды",
+ btn_own:"Бұл сіздің тауарыңыз",
+ pools_t:"Бірлескен сатып алу",pools_d:"Партияға қосылып, көтерме бағамен төлеңіз.",
+ smart_t:"Дүкеніңізге не керек?",smart_ph:"Мысалы: 200 кг картоп",find:"🔍 Табу",
+ ex:["200 кг картоп","сүт пен айран","кафеге сиыр еті","алма"],
+ smart_res:"Ең қолайлы нұсқалар",smart_none:"Ештеңе табылмады. Тауарды қарапайым жазыңыз, мысалы «пияз».",match:"сәйкес",
+ why_cat:"керекті тауар түрі",why_item:"дәл сол тауар",why_fill:"партия жиналуға жақын",why_rate:"жақсы пікірлер",why_near:"Тараздың жанында",why_vol:"көлеміңізге жетеді",why_save:"{n}% арзан",
+ all:"Барлығы",none:"Ештеңе табылмады. Жоғарыдағы таңдауды өзгертіңіз.",
+ remain:"Әлі жинау керек",already:"Сіз {n} алып отырсыз. Тағы қосуға болады.",amount:"Сізге қанша керек",
+ confirm:"✓ Бірге сатып алу",cancel:"Болдырмау",
+ escrow:"Партия жиналып, тауар келгенше ақша күтеді. Жиналмаса — бәрін қайтарамыз. Демода төлем жоқ.",
+ sum_goods:"Тауар",sum_deliv:"Жеткізу (сіздің үлесіңіз)",sum_comm:"Біздің қызмет 5%",sum_total:"Барлығы",sum_saved:"Сіз үнемдейсіз",no_retail:"Нарықтық баға көрсетілмеген — үнемді есептеу мүмкін емес.",
+ err_kg:"1-ден {n}-ге дейін сан көрсетіңіз",
+ ok_join_t:"Сіз сатып алудасыз!",ok_join_d:"Партия жиналғанда кабинеттегі мәртебе өзгереді. Ақша жеткізілгенше күтеді.",ok_full_d:"Партия жиналды! Сатушы жақында тауарды жібереді.",to_cab:"Кабинетті ашу",
+ only_shops_t:"Тек дүкендер сатып алады",only_shops_d:"Сіз сатушы ретінде кірдіңіз. Сатып алу үшін дүкен ретінде кіріңіз.",
+ prods_t:"Сатушылар",prods_d:"Облыстың фермерлері, жеке шаруалары және көтерме сатушылары.",
+ f_cat:"Не сатады",f_dist:"Аудан",f_type:"Кім",
+ type_farm:"Фермер",type_home:"Жеке шаруа",type_whole:"Көтерме сатушы",
+ km_to:"Тараздан {n} км",in_taraz:"Таразда",deals:"мәміле",no_rate:"әзірге бағасыз",no_goods:"Тауарлар жақында шығады",
+ reviews:"Дүкендердің пікірлері",no_rev:"Әзірге пікір жоқ",open_pools:"Ашық сатып алулар",phone_login:"🔒 Телефонды көру үшін кіріңіз",demo_phone:"демо нөмір",
+ add_t:"Өнім немесе тауар сату",add_d:"Тараз дүкендері тауарыңызды көріп, партия жинайды.",
+ help_card_t:"Өзіңіз толтырғыңыз келмей ме?",help_soon:"Жақында: дауыстық хабар жіберсеңіз — ЖИ өзі хабарландыру жасайды.",
+ form_t:"Жаңа хабарландыру",
+ seller_need_t:"Сату үшін сатушы аккаунты керек",seller_need_d:"Бір минут алады: аты, телефон және 4 цифрлық PIN-код.",reg_seller:"🌾 Сатушы ретінде тіркелу",have_acc:"Менің аккаунтым бар",
+ shop_cant:"Сіз дүкен ретінде кірдіңіз. Тек сатушы аккаунты сата алады — шығып, сатушы ретінде кіріңіз.",
+ a_item:"Не сатасыз",a_item_ph:"Мысалы: картоп",a_cat:"Тауар түрі",a_vol:"Қанша бар",a_unit:"Бірлік",
+ a_price:"1 кг немесе 1 л бағаңыз, ₸",a_retail:"Нарықтағы 1 кг немесе 1 л бағасы, ₸",a_retail_h:"Білсеңіз. Сонда дүкендер үнемін көреді.",a_days:"Тапсырысты неше күн жинау",days_n:"{n} күн",a_go:"✓ Хабарландыру жіберу",
+ err_add:"Тауарды, санын және бағасын толтырыңыз",err_retail:"Нарықтық баға сіздің бағаңыздан жоғары болуы керек",
+ ok_add_t:"Хабарландыру орналастырылды!",ok_add_d:"Дүкендер тауарыңызды көріп тұр. Тапсырыстар кабинетте шығады.",
+ deliv_t:"Жеткізу",deliv_d:"Өз көлігіңіз қажет емес. Ауылдан алып, дүкенге жеткіземіз. Ортақ көлікте тек өз үлесіңізді төлейсіз.",
+ d_from:"Қайдан алу",d_kg:"Жүк салмағы, кг",d_shops:"Бір көлікте қанша дүкен",
+ d_solo:"Тек сізге арналған жеке көлік",d_shared:"Ортақ көліктегі үлесіңіз",d_saved:"Жеткізудегі үнем",d_trips:"Қажет көлік: {n}",
+ d_tariff:"Тариф (демо): 3 000 ₸ + 1 км үшін 150 ₸. Газель 1 500 кг-ға дейін тасиды. Тараз ішінде: 2 000 ₸. Қашықтықтар шамамен.",
+ d_route:"Көлік бағыты",d_shop:"{n}-дүкен, Тараз",
+ earn_t:"Сервис қалай табыс табады",earn:["Сатып алудағы тауардан 5%","Тариф бойынша жеткізу ақысы","Кейін: көтерме сатушыларға ақылы жарнама"],
+ hi:"Сәлеметсіз бе, {n}!",acc_shop:"Дүкен аккаунты",acc_seller:"Сатушы аккаунты",
+ cab_shop_d:"Тапсырыстарыңыз және олар қазір қайда.",cab_seller_d:"Хабарландыруларыңыз және дүкендердің тапсырыстары.",
+ cab_orders:"тапсырыс",cab_spent:"жұмсалды",cab_saved:"үнемделді",cab_empty:"Әзірге тапсырыс жоқ.",go_pools:"Сатып алуларға өту",
+ st0:"Жинау",st1:"Жиналды",st2:"Жолда",st3:"Алынды",
+ ost_wait:"Партия жиналуда",ost_ready:"Партия жиналды, жіберілуін күтеміз",ost_shipped:"Тауар жолда",ost_done:"Алынды",ost_cancelled:"Тоқтатылды — ақша қайтарылды",
+ seller:"Сатушы",
+ add_more:"＋ Тағы алу",o_cancel:"Бас тарту",o_cancel_q:"Тапсырыстан бас тартасыз ба? Ақша қайтарылады.",o_receive:"✓ Тауарды алдым",
+ rate:"Жеткізу қалай өтті?",rated:"Сіздің бағаңыз:",t_thanks:"Бағаңызға рахмет!",
+ rev_good:"Бәрі уақытында келді, сапасы жақсы.",rev_mid:"Жақсы, бірақ ескертулер бар.",rev_bad:"Жеткізуде қиындықтар болды.",
+ my_pools:"Менің хабарландыруларым",add_new:"＋ Жаңа хабарландыру",buyers:"Кім тапсырыс берді",demo_buyers:"+ тағы {n} дүкен (демо)",no_buyers:"Әзірге ешкім тапсырыс бермеді",
+ p_ship:"🚚 Тауарды жібердім",p_cancel:"Жинауды тоқтату",p_cancel_q:"Жинауды тоқтатасыз ба? Барлық дүкенге ақша қайтарылады.",p_received:"Дүкендер алды: {a} / {b}",
+ k_active:"жиналуда",k_orders:"дүкен тапсырысы",k_rating:"менің рейтингім",seller_empty:"Әзірге хабарландыру жоқ.",
+ ok_ship_t:"Тауар жолда!",ok_ship_d:"Дүкендер мұны кабинетте көріп, алғанын растайды.",t_cancelled:"Дайын. Ақша қайтарылды",
+ login_t:"Кіру",login_d:"Телефон нөмірін және 4 цифрлық PIN-кодты енгізіңіз.",phone:"Телефон нөмірі",pin:"PIN-код (4 цифр)",pin2:"PIN-кодты қайталаңыз",do_login:"Кіру",
+ no_acc:"Аккаунт жоқ па?",to_reg:"Тіркелу",forgot:"PIN-кодты ұмыттыңыз ба?",forgot_b:"Қоңырау шалыңыз — көмектесеміз",err_login:"Нөмір немесе PIN-код қате",
+ demo_t:"Тексеру үшін (демо)",demo_d:"Дүкен: +7 700 000 00 01, PIN 1111. Сатушы: +7 700 000 00 02, PIN 2222. Барлық демо сатушылардың PIN-коды 2222.",
+ reg_t:"Тіркелу",reg_d:"Сіз кімсіз?",role_shop:"🏪 Менің дүкенім не кафем бар",role_shop_d:"Арзан сатып алғым келеді",role_seller:"🌾 Өз тауарымды сатамын",role_seller_d:"Фермер, жеке шаруа не көтерме сатушы",
+ r_name_shop:"Дүкен атауы",r_name_seller:"Атыңыз немесе шаруашылық атауы",r_dist:"Қай жерде тұрасыз",r_type:"Сіз кімсіз",do_reg:"✓ Тіркелу",have:"Аккаунтыңыз бар ма?",
+ err_name:"Атын немесе атауын жазыңыз",err_phone:"Нөмірді тексеріңіз. Мысалы: +7 701 234 56 78",err_phone_used:"Бұл нөмір тіркелген. «Кіру» басыңыз.",err_pin:"PIN-код — дәл 4 цифр",err_pin2:"PIN-кодтар сәйкес емес",
+ ok_reg_t:"Қош келдіңіз!",ok_reg_shop:"Енді басқа дүкендермен бірге сатып алуға болады.",ok_reg_seller:"Енді алғашқы тауарыңызды орналастырыңыз.",ok_reg_go:"Тауар орналастыру",ok_reg_go_shop:"Сатып алуларды көру",
+ new_desc:"Платформадағы жаңа сатушы.",
+ reset:"Демо деректерді тазалау",reset_q:"Барлық аккаунттар мен тапсырыстарды өшіріп, сайтты басына қайтару керек пе?",
+ foot_d:"Тараз дүкендері мен Жамбыл облысы ауылдарына арналған бірлескен сатып алу және жеткізу.",foot_sec:"Бөлімдер",foot_help:"Көмек",foot_team:"Команда: Інжу және Бекарыс",
+ busy:"Күте тұрыңыз…",loading:"Жүктелуде…",err_t:"Сәтсіз болды",err_generic:"Бірдеңе дұрыс болмады. Бетті жаңартып, қайта көріңіз.",err_net:"Интернет байланысы жоқ. Қосылымды тексеріп, қайта көріңіз.",err_confirm:"Supabase-те email растау қосулы. Оны өшіріңіз: Authentication → Sign In / Providers → Email → Confirm email.",err_noprofile:"Тіркелу аяқталмаған. Сол нөмір мен PIN-кодпен қайта тіркеліңіз.",err_closed:"Бұл жинау жабылған. Бет жаңартылды.",err_own:"Өз тауарыңызды сатып алуға болмайды.",err_state:"Бұл әрекет орындалған немесе қолжетімсіз. Бет жаңартылды.",err_kg_race:"Сіз таңдап жатқанда, басқа дүкендер партияның бір бөлігін алып қойды. Көлемді азайтыңыз.",
+ ok_ship_demo_d:"Партия жиналды, сатушы тауарды жіберіп қойды. Кабинетте алғаныңызды растаңыз.",
+ offline_banner:"⚠️ Деректер базасымен байланыс жоқ. Оффлайн-демо режимі қосылды: деректер тек осы браузерде сақталады.",
+ demo_cloud:"Бір құрылғыда дүкенді, екіншісінде сатушыны тіркеңіз — тапсырыстарды екеуі де көреді. Демо сатушылар партия жиналған бойда тауарды өздері жібереді.",
+ foot_cloud:"Хакатонға арналған демо нұсқа. Компаниялар, бағалар мен қашықтықтар шартты. Деректер ортақ базада сақталады.",
+ foot_demo:"Хакатонға арналған демо нұсқа. Компаниялар, бағалар мен қашықтықтар шартты. Аккаунттар тек осы браузерде сақталады."
+}};
+
+/* ===== Помощники ===== */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const num=n=>Math.round(n).toLocaleString("ru-RU");
+const money=n=>num(n)+" ₸";
+const clone=o=>JSON.parse(JSON.stringify(o));
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+// PIN хранится не в открытом виде. Это демо: настоящая защита — только на сервере
+const hash=s=>{let x=2166136261;for(const c of s){x^=c.charCodeAt(0);x=Math.imul(x,16777619)}return(x>>>0).toString(16)};
+const pinHash=(phone,pin)=>hash("sm|"+phone+"|"+pin);
+const normPhone=s=>{let d=String(s).replace(/\D/g,"");if(d.length===11&&d[0]==="8")d="7"+d.slice(1);if(d.length===10)d="7"+d;return/^7\d{10}$/.test(d)?d:null};
+const fmtPhone=d=>`+${d[0]} ${d.slice(1,4)} ${d.slice(4,7)} ${d.slice(7,9)} ${d.slice(9)}`;
+
+function fresh(){
+  const now=Date.now(),prods=clone(PRODS);
+  const users=[{id:"u_shop",role:"shop",name:"Магазин «Айгерим»",phone:"77000000001",pin:pinHash("77000000001","1111"),demo:true}];
+  prods.forEach((p,i)=>{const phone="7700000000"+(i+2);users.push({id:"u_"+p.id,role:"seller",name:p.name,phone,pin:pinHash(phone,"2222"),prod:p.id,demo:true});p.owner="u_"+p.id});
+  const pools=clone(POOLS).map(({days,...p})=>({...p,deadline:now+days*DAY,status:"open"}));
+  return{v:3,users,prods,pools,orders:[]};
+}
+let S=fresh(),me=null,API=null,MODE="local",sb=null,offline=false;
+const save=()=>{if(MODE==="local")store.set("sm_state3",S)};
+const user=()=>S.users.find(u=>u.id===me)||null;
+const setMe=id=>{me=id;if(MODE==="local")store.set("sm_me",id)};
+let lang=store.get("sm_lang")==="kz"?"kz":"ru";
+const t=k=>L[lang][k]??L.ru[k]??k;
+const tf=(k,o)=>t(k).replace(/\{(\w+)\}/g,(_,x)=>typeof o==="object"?o[x]:o);
+const N=o=>typeof o==="string"?o:(o[lang]||o.ru);
+const prod=id=>S.prods.find(p=>p.id===id);
+const prodUser=p=>S.users.find(u=>u.id===p.owner);
+const dist=id=>DIST.find(d=>d.id===id)||DIST[0];
+const pool=id=>S.pools.find(p=>p.id===id);
+const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
+const rating=p=>avg(p.rev.map(r=>r[2]));
+const savePct=p=>p.retail?Math.round((p.retail-p.price)/p.retail*100):0;
+const live=o=>o.status!=="cancelled";
+const poolOrders=p=>S.orders.filter(o=>o.pool===p.id&&live(o));
+const members=p=>p.members??(p.extra+poolOrders(p).length);
+const mine=p=>{const u=user();return!!u&&prod(p.prod).owner===u.id};
+const kmText=d=>d.km?tf("km_to",d.km):t("in_taraz");
+const daysLeft=p=>{const d=Math.ceil((p.deadline-Date.now())/DAY);return d<=1?t("last_day"):tf("left_days",d)};
+const stars=p=>{const r=rating(p);return r?`<span class="stars">★ ${r.toFixed(1)}</span>`:`<span class="meta">${t("no_rate")}</span>`};
+const catOpts=sel=>Object.entries(CAT).map(([k,v])=>`<option value="${k}" ${sel===k?"selected":""}>${v.i} ${esc(N(v))}</option>`).join("");
+const distOpts=sel=>DIST.map(d=>`<option value="${d.id}" ${sel===d.id?"selected":""}>${esc(N(d))}</option>`).join("");
+const toast=m=>{const e=$("#toast");e.textContent=m;e.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove("show"),2800)};
+const goTo=h=>{if(location.hash===h)go();else location.hash=h};
+const dlg=$("#dlg");
+const openDlg=h=>{dlg.innerHTML=h;if(!dlg.open)dlg.showModal();dlg.scrollTop=0};
+dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
+// большое окно «Готово» вместо незаметной всплывашки
+const okDlg=(title,text,btns,info)=>openDlg(`<div class="okdlg"><div class="okic ${info?"info":""}" aria-hidden="true">${info?"!":"✓"}</div><h2>${title}</h2><p>${text}</p><div class="fgrid">${btns||""}<button class="btn ${btns?"ghost":"big"} wide" type="button" data-close>${t("ok")}</button></div></div>`);
+// ошибка видна у формы, фокус — на поле, которое нужно исправить
+const showErr=(id,msg,field)=>{const e=$("#"+id);e.textContent=msg;e.classList.add("show");$$("[aria-invalid]").forEach(x=>x.removeAttribute("aria-invalid"));const f=field&&$("#"+field);if(f){f.setAttribute("aria-invalid","true");f.focus()}else e.scrollIntoView({block:"nearest"})};
+
+// стоимость участия: товар + доля общей машины + 5% услуги
+function calc(p,qty){
+  const km=dist(prod(p.prod).dist).km;
+  const goods=qty*p.price,deliv=trip(km)*Math.ceil(p.target/CAP)*qty/p.target,comm=goods*COMM,total=goods+deliv+comm;
+  const retail=p.retail?qty*p.retail:null;
+  return{goods,retail,deliv,comm,total,saved:retail==null?null:retail-total};
+}
+
+/* ===== Правила жизни закупки ===== */
+// срок вышел, а партия не собрана → сбор отменяется, деньги возвращаются
+function tick(){
+  const now=Date.now();let ch=false;
+  S.pools.forEach(p=>{if(p.status==="open"&&p.deadline<now){p.status="cancelled";poolOrders(p).forEach(o=>o.status="cancelled");ch=true}});
+  if(ch)save();
+}
+function checkFull(p){
+  if(p.status==="open"&&p.got>=p.target){p.status="full";poolOrders(p).forEach(o=>{if(o.status==="wait")o.status="ready"})}
+}
+function checkDone(p){
+  const os=poolOrders(p);
+  if(p.status==="shipped"&&os.every(o=>o.status==="done"))p.status="done";
+}
+
+/* ===== Хранилище: оффлайн-демо или общая база Supabase ===== */
+// Оффлайн-демо: всё хранится в этом браузере. Работает без ключей и без интернета
+const LocalAPI={
+  async init(){S=store.get("sm_state3");if(!S||S.v!==3)S=fresh();me=store.get("sm_me")},
+  tick,
+  async login(ph,pin){const u=S.users.find(x=>x.phone===ph&&x.pin===pinHash(ph,pin));if(!u)return{err:"err_login"};setMe(u.id);return{user:u}},
+  async register(d){
+    if(S.users.some(x=>x.phone===d.phone))return{err:"err_phone_used"};
+    const u={id:uid("u"),role:d.role,name:d.name,phone:d.phone,pin:pinHash(d.phone,d.pin)};
+    if(d.role==="seller"){const p={id:uid("p"),name:d.name,type:d.type,dist:d.dist,cats:[],goods:"",desc:{ru:L.ru.new_desc,kz:L.kz.new_desc},rev:[],deals:0,owner:u.id};S.prods.push(p);u.prod=p.id}
+    S.users.push(u);save();setMe(u.id);return{user:u};
+  },
+  async logout(){setMe(null)},
+  async join(id,q){
+    const p=pool(id),u=user();
+    if(!u||u.role!=="shop")return{err:"only_shops"};
+    if(!p||p.status!=="open")return{err:"closed"};
+    if(mine(p))return{err:"own"};
+    if(q<1||q>p.target-p.got)return{err:"err_kg"};
+    let o=S.orders.find(x=>x.pool===p.id&&x.user===u.id&&x.status==="wait");
+    if(o)o.qty+=q;else{o={id:uid("o"),pool:p.id,user:u.id,qty:q,status:"wait",rev:0};S.orders.unshift(o)}
+    const c=calc(p,o.qty);o.total=c.total;o.saved=c.saved;
+    p.got+=q;checkFull(p);save();return{data:p.status};
+  },
+  async cancelOrder(id){const o=S.orders.find(x=>x.id===id&&x.user===me);if(!o||o.status!=="wait")return{err:"state"};const p=pool(o.pool);p.got=Math.max(0,p.got-o.qty);o.status="cancelled";save();return{}},
+  async receive(id){const o=S.orders.find(x=>x.id===id&&x.user===me);if(!o||o.status!=="shipped")return{err:"state"};const p=pool(o.pool);o.status="done";prod(p.prod).deals++;checkDone(p);save();return{}},
+  async rate(id,n,body){const o=S.orders.find(x=>x.id===id&&x.user===me);if(!o||o.status!=="done"||o.rev)return{err:"state"};o.rev=n;prod(pool(o.pool).prod).rev.unshift([user().name,body,n]);save();return{}},
+  async ship(id){const p=pool(id);if(!p||!mine(p)||p.status!=="full")return{err:"state"};p.status="shipped";poolOrders(p).forEach(o=>o.status="shipped");checkDone(p);save();return{}},
+  async cancelPool(id){const p=pool(id);if(!p||!mine(p)||p.status!=="open")return{err:"state"};p.status="cancelled";poolOrders(p).forEach(o=>o.status="cancelled");save();return{}},
+  async addPool(d){
+    const u=user();if(!u||u.role!=="seller")return{err:"only_sellers"};
+    const pr=prod(u.prod);
+    if(!pr.cats.includes(d.cat))pr.cats.push(d.cat);
+    if(!pr.goods.toLowerCase().includes(d.item.toLowerCase()))pr.goods=(pr.goods+" "+d.item.toLowerCase()).trim();
+    S.pools.unshift({id:uid("g"),prod:pr.id,item:{ru:d.item,kz:d.item},cat:d.cat,unit:d.unit,target:d.target,got:0,extra:0,retail:d.retail,price:d.price,deadline:Date.now()+d.days*DAY,status:"open"});
+    save();return{};
+  }
+};
+
+// Облако: общая база Supabase. Все правила проверяет сама база (supabase/schema.sql)
+const mail=ph=>ph+"@"+EMAIL_DOMAIN,pw=pin=>"sm-pin-"+pin; // Supabase требует пароль от 6 знаков
+const errCode=e=>{console.warn("Supabase:",e);const m=(e&&e.message)||String(e||"");const c=m.match(/SM:(\w+)/);if(c)return c[1];return/fetch|network|timeout|Failed/i.test(m)?"err_net":"err_generic"};
+const withTimeout=(p,ms)=>Promise.race([p,new Promise((_,no)=>setTimeout(()=>no(new Error("timeout")),ms))]);
+const loadScript=src=>new Promise((ok,no)=>{const el=document.createElement("script");el.src=src;el.onload=ok;el.onerror=()=>no(new Error("network"));document.head.appendChild(el)});
+const CloudAPI={
+  async init(){
+    await withTimeout(loadScript(SUPABASE_JS),10000);
+    sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const {data}=await withTimeout(sb.auth.getSession(),10000);
+    me=data.session?data.session.user.id:null;
+    await withTimeout(this.refresh(),15000);
+    if(me&&!user()){await sb.auth.signOut();me=null}
+    sb.channel("sm-live").on("postgres_changes",{event:"*",schema:"public"},liveUpdate).subscribe();
+  },
+  tick(){}, // сроки сборов проверяет база (expire_pools)
+  async refresh(){
+    await sb.rpc("expire_pools");
+    const none=Promise.resolve({data:[]});
+    const q=await Promise.all([
+      sb.from("producers").select("*").order("created_at"),
+      sb.from("pools").select("*").order("created_at",{ascending:false}),
+      sb.from("reviews").select("*").order("created_at",{ascending:false}),
+      me?sb.from("profiles").select("id,role,name,phone"):none,
+      me?sb.from("orders").select("*").order("created_at",{ascending:false}):none]);
+    const bad=q.find(r=>r.error);if(bad)throw bad.error;
+    const [pr,po,rv,pf,od]=q.map(r=>r.data||[]);
+    S={v:3,
+      prods:pr.map(p=>({id:p.id,name:p.name,type:p.type,dist:p.dist,cats:p.cats||[],goods:p.goods||"",desc:p.descr||{ru:"",kz:""},deals:p.deals,owner:p.owner,demoPhone:p.demo_phone,
+        rev:rv.filter(r=>r.producer===p.id).map(r=>[r.author,r.body,r.stars])})),
+      pools:po.map(p=>({id:p.id,prod:p.producer,item:p.item,cat:p.cat,unit:p.unit,target:p.target,got:p.got,extra:p.extra,members:p.members,retail:p.retail,price:p.price,deadline:Date.parse(p.deadline),status:p.status})),
+      users:pf.map(u=>({...u,prod:(pr.find(x=>x.owner===u.id)||{}).id})),
+      orders:od.map(o=>({id:o.id,pool:o.pool,user:o.shop,qty:o.qty,total:+o.total,saved:o.saved==null?null:+o.saved,status:o.status,rev:o.rating||0}))};
+  },
+  async call(fn,args){
+    try{const {data,error}=await sb.rpc(fn,args);if(error)return{err:errCode(error)};await this.refresh();return{data}}
+    catch(e){return{err:errCode(e)}}
+  },
+  async login(ph,pin){
+    try{
+      const {data,error}=await sb.auth.signInWithPassword({email:mail(ph),password:pw(pin)});
+      if(error)return{err:/invalid/i.test(error.message)?"err_login":errCode(error)};
+      me=data.user.id;await this.refresh();
+      if(!user()){await sb.auth.signOut();me=null;return{err:"err_noprofile"}}
+      return{user:user()};
+    }catch(e){return{err:errCode(e)}}
+  },
+  async register(d){
+    try{
+      let {data,error}=await sb.auth.signUp({email:mail(d.phone),password:pw(d.pin)});
+      if(error&&/registered|exists/i.test(error.message)){
+        // номер уже есть: возможно, прошлая регистрация оборвалась до создания профиля
+        const r=await sb.auth.signInWithPassword({email:mail(d.phone),password:pw(d.pin)});
+        if(r.error)return{err:"err_phone_used"};
+        const {data:pf}=await sb.from("profiles").select("id").eq("id",r.data.user.id).maybeSingle();
+        if(pf){await sb.auth.signOut();return{err:"err_phone_used"}}
+        data=r.data;
+      }else if(error)return{err:errCode(error)};
+      if(!data.session)return{err:"err_confirm"};
+      me=data.user.id;
+      const {error:e2}=await sb.rpc("register_profile",{p_role:d.role,p_name:d.name,p_phone:d.phone,p_type:d.type,p_dist:d.dist});
+      if(e2)return{err:errCode(e2)};
+      await this.refresh();return{user:user()};
+    }catch(e){return{err:errCode(e)}}
+  },
+  async logout(){try{await sb.auth.signOut()}catch(e){}me=null;try{await this.refresh()}catch(e){}},
+  join(id,q){return this.call("join_pool",{p_pool:id,p_qty:q})},
+  cancelOrder(id){return this.call("cancel_order",{p_order:id})},
+  receive(id){return this.call("receive_order",{p_order:id})},
+  rate(id,n,body){return this.call("rate_order",{p_order:id,p_stars:n,p_body:body})},
+  ship(id){return this.call("ship_pool",{p_pool:id})},
+  cancelPool(id){return this.call("cancel_pool",{p_pool:id})},
+  addPool(d){return this.call("add_pool",{p_item:d.item,p_cat:d.cat,p_unit:d.unit,p_target:d.target,p_price:d.price,p_retail:d.retail,p_days:d.days})}
+};
+// изменения с других устройств: обновляем, но не мешаем, пока человек что-то вводит
+let liveT;
+function liveUpdate(){
+  clearTimeout(liveT);
+  liveT=setTimeout(async()=>{
+    try{await CloudAPI.refresh()}catch(e){return}
+    const a=document.activeElement;
+    if(a&&/^(INPUT|SELECT|TEXTAREA)$/.test(a.tagName))return;
+    if(["add","reg","login"].includes(route))return;
+    render();
+  },400);
+}
+const ERRMAP={closed:"err_closed",own:"err_own",state:"err_state",auth:"err_noprofile",only_shops:"only_shops_d",only_sellers:"err_generic",role:"err_generic",err_kg:"err_kg_race"};
+const errText=c=>{const k=ERRMAP[c]||c;return typeof L.ru[k]==="string"?t(k):t("err_generic")};
+// кнопка показывает «Подождите…», пока идёт запрос
+async function withBusy(btn,fn){
+  if(btn){btn.disabled=true;btn.dataset.l=btn.textContent;btn.textContent=t("busy")}
+  try{return await fn()}finally{if(btn&&btn.isConnected){btn.disabled=false;btn.textContent=btn.dataset.l}}
+}
+async function doAction(p,msg){const r=await p;render();if(r.err)okDlg(t("err_t"),errText(r.err),"",true);else if(msg)toast(msg);return r}
+
+/* ===== Карточки ===== */
+function poolBtn(p){
+  if(p.status!=="open")return `<button class="btn wide" type="button" disabled>${t("pst_"+p.status)}</button>`;
+  if(mine(p))return `<button class="btn wide" type="button" disabled>${t("btn_own")}</button>`;
+  return `<button class="btn wide" type="button" data-join="${p.id}">${t("join")}</button>`;
+}
+function poolCard(p){
+  const pr=prod(p.prod),pct=Math.min(100,Math.round(p.got/p.target*100)),rest=Math.max(0,p.target-p.got);
+  return `<article class="pool">
+  <div class="row"><span class="pic" aria-hidden="true">${CAT[p.cat].i}</span>${p.retail?`<span class="save">−${savePct(p)}%</span>`:""}</div>
+  <h3>${esc(N(p.item))}</h3>
+  <div class="meta">${esc(pr.name)} · ${esc(N(dist(pr.dist)))}</div>
+  <div class="price"><b class="num">${money(p.price)}</b> ${t("per")} ${p.unit}${p.retail?`<s>${money(p.retail)}</s>`:""}</div>
+  <div class="prog" role="progressbar" aria-label="${pct}%" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="transform:scaleX(${pct/100})"></i></div>
+  ${p.status==="open"?`<div class="left">${tf("left_to",num(rest)+" "+p.unit)}</div>`:`<div><span class="badge ${p.status}">${t("pst_"+p.status)}</span></div>`}
+  <div class="row meta"><span>👥 ${members(p)} ${t("members")}</span>${p.status==="open"?`<span>⏳ ${daysLeft(p)}</span>`:""}</div>
+  ${poolBtn(p)}
+  </article>`;
+}
+function prodCard(p){
+  const d=dist(p.dist);
+  return `<button class="pcard" type="button" data-prod="${p.id}">
+  <span class="av" aria-hidden="true">${TYPE_IC[p.type]||"🧺"}</span>
+  <span style="flex:1;min-width:0">
+    <span class="row"><b style="font-size:21px">${esc(p.name)}</b>${stars(p)}</span>
+    <span class="meta" style="display:block">${t("type_"+p.type)} · ${esc(N(d))}, ${kmText(d)}</span>
+    <span style="display:block;margin-top:4px">${p.goods?esc(p.goods):`<span class="meta">${t("no_goods")}</span>`}</span>
+    <span style="display:block">${p.cats.map(c=>`<span class="tag">${CAT[c].i} ${esc(N(CAT[c]))}</span>`).join("")}</span>
+  </span></button>`;
+}
+const sumHtml=c=>`
+  <div class="res-row"><span>${t("sum_goods")}</span><b>${money(c.goods)}</b></div>
+  <div class="res-row"><span>${t("sum_deliv")}</span><b>${money(c.deliv)}</b></div>
+  <div class="res-row"><span>${t("sum_comm")}</span><b>${money(c.comm)}</b></div>
+  <div class="res-row"><span><b>${t("sum_total")}</b></span><b>${money(c.total)}</b></div>
+  ${c.saved==null?`<p class="note">${t("no_retail")}</p>`:`<div class="res-big"><span>${t("sum_saved")}</span><b>${money(Math.max(0,c.saved))}</b></div>`}`;
+
+/* ===== Окна ===== */
+function helpDlg(){
+  openDlg(`<h2>${t("help_t")}</h2><p style="font-size:20px">${t("help_d")}</p>
+  <div class="phone">+7 (___) ___-__-__</div><div class="meta">${t("help_num")}</div>
+  <div class="fgrid" style="margin-top:20px">
+    <button class="btn big orange" type="button" data-demo>${t("call")}</button>
+    <button class="btn big" type="button" data-demo>${t("wa")}</button>
+    <button class="btn ghost" type="button" data-close>${t("close")}</button>
+  </div>`);
+}
+
+let pending=null; // куда вернуть после входа
+function joinClick(id){
+  const u=user();
+  if(!u){pending={join:id};return goTo("#login")}
+  if(u.role!=="shop")return okDlg(t("only_shops_t"),t("only_shops_d"),"",true);
+  joinDlg(id);
+}
+function joinDlg(id){
+  const p=pool(id),u=user();if(!p||p.status!=="open"||!u||mine(p))return;
+  const pr=prod(p.prod),rem=p.target-p.got;
+  const prev=S.orders.find(o=>o.pool===p.id&&o.user===u.id&&o.status==="wait");
+  openDlg(`<div class="row" style="justify-content:flex-start;gap:14px"><span class="pic" style="font-size:48px" aria-hidden="true">${CAT[p.cat].i}</span><div><h2 style="margin:0">${esc(N(p.item))}</h2><div class="meta">${esc(pr.name)} · ${money(p.price)} ${t("per")} ${p.unit}</div></div></div>
+  ${prev?`<p class="note" style="font-weight:600;color:var(--brand)">${tf("already",num(prev.qty)+" "+p.unit)}</p>`:""}
+  <p style="margin-top:12px">${t("remain")}: <b>${num(rem)} ${p.unit}</b></p>
+  <label style="margin-top:16px">${t("amount")} (${p.unit})<input id="jKg" name="qty" type="number" min="1" max="${rem}" value="${Math.min(prev?10:100,rem)}" inputmode="numeric" aria-describedby="jErr"></label>
+  <div class="err" id="jErr" role="alert" style="margin-top:12px"></div>
+  <div id="jSum" style="margin-top:12px"></div>
+  <p class="note">🔒 ${t("escrow")}</p>
+  <div class="dlg-act"><button class="btn" type="button" id="jOk">${t("confirm")}</button><button class="btn ghost" type="button" data-close>${t("cancel")}</button></div>`);
+  const upd=()=>{const q=Math.min(rem,Math.max(0,+$("#jKg").value||0));$("#jSum").innerHTML=sumHtml(calc(p,q))};
+  $("#jKg").oninput=upd;upd();
+  $("#jOk").onclick=async()=>{
+    const q=Math.floor(+$("#jKg").value||0);
+    if(q<1||q>rem)return showErr("jErr",tf("err_kg",num(rem)),"jKg");
+    const r=await withBusy($("#jOk"),()=>API.join(p.id,q));
+    if(r.err){render();return showErr("jErr",errText(r.err))}
+    render();
+    okDlg(t("ok_join_t"),t(r.data==="shipped"?"ok_ship_demo_d":r.data==="full"?"ok_full_d":"ok_join_d"),`<a class="btn big wide" href="#cab">${t("to_cab")}</a>`);
+  };
+}
+
+function prodDlg(id){
+  const p=prod(id);if(!p)return;
+  const d=dist(p.dist),ps=S.pools.filter(x=>x.prod===p.id&&x.status==="open"),owner=prodUser(p),u=user();
+  const ph=owner?owner.phone:p.demoPhone,isDemo=!owner||!!owner.demo;
+  const phoneBlock=!u?`<a class="btn ghost wide" href="#login" data-pend="prods">${t("phone_login")}</a>`
+    :ph?`<div class="phone">${fmtPhone(ph)}</div>${isDemo?`<div class="meta">${t("demo_phone")}</div>`:""}
+      <div class="dlg-act">${isDemo?`<button class="btn orange" type="button" data-demo>${t("call")}</button><button class="btn" type="button" data-demo>${t("wa")}</button>`
+      :`<a class="btn orange" href="tel:+${ph}">${t("call")}</a><a class="btn" href="https://wa.me/${ph}" target="_blank" rel="noopener">${t("wa")}</a>`}</div>`:"";
+  openDlg(`<div class="row" style="justify-content:flex-start;gap:14px"><span class="av" aria-hidden="true">${TYPE_IC[p.type]||"🧺"}</span><div><h2 style="margin:0">${esc(p.name)}</h2><div class="meta">${t("type_"+p.type)} · ${esc(N(d))}, ${kmText(d)}</div></div></div>
+  <p style="margin-top:14px">${esc(N(p.desc))}</p>
+  ${p.goods?`<p style="margin-top:8px">🧺 ${esc(p.goods)}</p>`:""}
+  <p style="margin-top:8px">${stars(p)} · ${p.deals} ${t("deals")}</p>
+  <div style="margin-top:16px">${phoneBlock}</div>
+  ${ps.length?`<h3 style="margin-top:22px">${t("open_pools")}</h3>${ps.map(x=>`<div class="res-row"><span>${CAT[x.cat].i} ${esc(N(x.item))} · <b>${money(x.price)}</b> ${t("per")} ${x.unit}</span>${mine(x)?"":`<button class="btn sm" type="button" data-join="${x.id}">${t("join")}</button>`}</div>`).join("")}`:""}
+  <h3 style="margin-top:22px">${t("reviews")}</h3>
+  ${p.rev.length?p.rev.map(r=>`<div class="rev"><b>${esc(r[0])}</b> <span class="stars" aria-label="${r[2]}/5">${"★".repeat(r[2])}</span><br>${esc(r[1])}</div>`).join(""):`<p class="meta">${t("no_rev")}</p>`}
+  <button class="btn ghost wide" type="button" data-close style="margin-top:16px">${t("close")}</button>`);
+}
+
+/* ===== Страницы ===== */
+const VIEWS={};
+const NAV=[["home","🏠"],["pools","🧺"],["prods","👨‍🌾"],["add","🌾"],["deliv","🚚"],["cab","👤"]];
+let route="home";
+
+VIEWS.home=()=>{
+  const open=S.pools.filter(p=>p.status==="open");
+  const hot=open.slice().sort((a,b)=>b.got/b.target-a.got/a.target).slice(0,3);
+  const withRetail=S.pools.filter(p=>p.retail);
+  $("#app").innerHTML=`
+  <section class="hero" style="margin-top:0">
+    <div>
+      <span class="eyebrow">📍 ${t("h_eyebrow")}</span>
+      <h1>${t("h_title")}</h1>
+      <p class="lead">${t("h_lead")}</p>
+      <div class="cta">
+        <a class="btn big" href="#pools">${t("h_buy")}</a>
+        <a class="btn big orange" href="#add">${t("h_sell")}</a>
+      </div>
+      <p class="helpline">${t("h_help")} <button class="link" type="button" data-help>${t("h_help_b")}</button></p>
+    </div>
+    <div>
+      <div class="flow" role="img" aria-label="${esc(t("flow_v")+" → "+t("flow_t")+" → "+t("flow_s"))}">
+        <div class="node"><span>🏡</span><b>${t("flow_v")}</b><small>${t("flow_v_d")}</small></div><div class="arr" aria-hidden="true">→</div>
+        <div class="node"><span>🚚</span><b>${t("flow_t")}</b><small>${t("flow_t_d")}</small></div><div class="arr" aria-hidden="true">→</div>
+        <div class="node"><span>🏪</span><b>${t("flow_s")}</b><small>${t("flow_s_d")}</small></div>
+      </div>
+      <p class="flow-note">${t("flow_note")}</p>
+      <div class="kpis" style="justify-content:center">
+        <div><b>${open.length}</b><span>${t("k_open")}</span></div>
+        <div><b>${S.prods.length}</b><span>${t("k_prods")}</span></div>
+        <div><b>~${Math.round(avg(withRetail.map(savePct)))}%</b><span>${t("k_save")}</span></div>
+      </div>
+    </div>
+  </section>
+
+  ${hot.length?`<section><div class="row" style="margin-bottom:18px"><h2 style="margin:0">${t("hot")}</h2><a class="btn ghost sm" href="#pools">${t("all_pools")}</a></div><div class="grid">${hot.map(poolCard).join("")}</div></section>`:""}
+
+  <section>
+    <h2>${t("how_t")}</h2>
+    <div class="steps">${[1,2,3].map(i=>`<div class="panel soft step"><b>${i}</b><h3>${t("s"+i+"_t")}</h3><p>${t("s"+i+"_d")}</p></div>`).join("")}</div>
+  </section>
+
+  <section>
+    <h2>${t("trust_t")}</h2>
+    <div class="steps">${[["🔒",1],["⭐",2],["✅",3]].map(([ic,i])=>`<div class="panel trust"><div class="ic" aria-hidden="true">${ic}</div><h3>${t("tr"+i+"_t")}</h3><p>${t("tr"+i+"_d")}</p></div>`).join("")}</div>
+  </section>
+
+  ${withRetail.length?`<section class="panel">
+    <div class="calc">
+      <div>
+        <h2 style="margin-bottom:8px">${t("calc_t")}</h2>
+        <p class="meta" style="margin-bottom:18px">${t("calc_d")}</p>
+        <div class="fgrid">
+          <label>${t("calc_item")}<select id="ci">${withRetail.map(p=>`<option value="${p.id}">${CAT[p.cat].i} ${esc(N(p.item))} — ${esc(prod(p.prod).name)}</option>`).join("")}</select></label>
+          <label>${t("calc_week")}<span class="unit"><input id="cw" type="number" min="1" max="100000" value="100" inputmode="numeric"><span id="cu"></span></span></label>
+        </div>
+      </div>
+      <div id="cres" aria-live="polite"></div>
+    </div>
+  </section>`:""}
+
+  <section class="faq">
+    <h2>${t("faq_t")}</h2>
+    ${t("faq").map(([q,a])=>`<details><summary>${q}</summary><p>${a}</p></details>`).join("")}
+  </section>`;
+  if(!withRetail.length)return;
+  const upd=()=>{
+    const p=pool($("#ci").value),q=Math.max(0,+$("#cw").value||0),M=4.3,c=calc(p,q);
+    $("#cu").textContent=p.unit;
+    $("#cres").innerHTML=`
+      <div class="res-row"><span>${t("calc_now")}</span><b>${money(c.retail*M)}</b></div>
+      <div class="res-row"><span>${t("calc_new")}<br><span class="meta">${t("calc_inc")}</span></span><b>${money(c.total*M)}</b></div>
+      <div class="res-big"><span>${t("calc_res")}</span><b>${money(Math.max(0,c.saved*M))}</b></div>
+      <p class="note">${t("calc_note")}</p>`;
+  };
+  $("#ci").onchange=upd;$("#cw").oninput=upd;upd();
+};
+
+// умный подбор: разбор запроса и баллы по правилам
+function smart(q){
+  const w=q.toLowerCase().split(/[^a-zа-яёәғқңөұүһі0-9]+/).filter(Boolean);
+  const cats=Object.keys(KW).filter(c=>KW[c].some(s=>w.some(x=>x.startsWith(s))));
+  const am=q.match(/(\d[\d\s]*)\s*(кг|л|kg)/i),need=am?+am[1].replace(/\s/g,""):null;
+  return S.pools.filter(p=>p.status==="open"&&!mine(p)).map(p=>{
+    const pr=prod(p.prod),d=dist(pr.dist);let s=0;const why=[];
+    const iw=(p.item.ru+" "+p.item.kz+" "+pr.goods).toLowerCase().split(/[^a-zа-яёәғқңөұүһі]+/).filter(x=>x.length>2);
+    const hit=w.some(x=>x.length>2&&iw.some(y=>y.startsWith(x.slice(0,4))||x.startsWith(y.slice(0,4))));
+    const catHit=cats.includes(p.cat);
+    if(!catHit&&!hit)return null;
+    if(hit){s+=35;why.push(t("why_item"))}
+    if(catHit){s+=30;why.push(t("why_cat"))}
+    const fill=p.got/p.target;s+=fill*15;if(fill>=.6)why.push(t("why_fill"));
+    const r=rating(pr);s+=r/5*10;if(r>=4.7)why.push(t("why_rate"));
+    if(d.km<=50){s+=5;why.push(t("why_near"))}
+    if(need!=null){if(p.target-p.got>=need){s+=5;why.push(t("why_vol"))}else s-=10}
+    if(p.retail){s+=savePct(p)/5;why.push(tf("why_save",savePct(p)))}
+    return{p,pct:Math.max(1,Math.min(99,Math.round(s))),why:why.slice(0,4)};
+  }).filter(Boolean).sort((a,b)=>b.pct-a.pct).slice(0,3);
+}
+let pcat="",sq="";
+VIEWS.pools=()=>{
+  $("#app").innerHTML=`<div class="head"><h1>${t("pools_t")}</h1><p class="lead">${t("pools_d")}</p></div>
+  <div class="panel soft" style="margin-bottom:28px">
+    <label for="sq" style="font-size:20px">${t("smart_t")}</label>
+    <div class="sbar"><input id="sq" value="${esc(sq)}" placeholder="${esc(t("smart_ph"))}" enterkeyhint="search" autocomplete="off"><button class="btn" type="button" id="sgo">${t("find")}</button></div>
+    <div class="ex">${t("ex").map(e=>`<button type="button">${esc(e)}</button>`).join("")}</div>
+    <div id="sres" aria-live="polite"></div>
+  </div>
+  <div class="chips" role="group" aria-label="${t("f_cat")}">${[["","🧺",t("all")],...Object.entries(CAT).map(([k,v])=>[k,v.i,N(v)])].map(([k,i,n])=>`<button type="button" data-c="${k}" aria-pressed="${pcat===k}">${i} ${esc(n)}</button>`).join("")}</div>
+  <div class="grid" id="pg"></div>`;
+  const order={open:0,full:1,shipped:2};
+  const list=S.pools.filter(p=>p.status in order&&(!pcat||p.cat===pcat)).sort((a,b)=>order[a.status]-order[b.status]);
+  $("#pg").innerHTML=list.length?list.map(poolCard).join(""):`<div class="empty">${t("none")}</div>`;
+  $$(".chips button").forEach(b=>b.onclick=()=>{pcat=b.dataset.c;render()});
+  const run=()=>{
+    sq=$("#sq").value.trim();if(!sq)return;
+    const r=smart(sq);
+    $("#sres").innerHTML=r.length?`<h3 style="margin-top:20px">${t("smart_res")}</h3>`+r.map(m=>`<div class="match">
+      <div><h3>${CAT[m.p.cat].i} ${esc(N(m.p.item))} · ${money(m.p.price)} ${t("per")} ${m.p.unit}</h3><div class="meta">${esc(prod(m.p.prod).name)}</div><div>${m.why.map(w=>`<span class="tag">✓ ${esc(w)}</span>`).join("")}</div></div>
+      <div><div class="score">${m.pct}%</div><div class="meta" style="margin-bottom:8px">${t("match")}</div><button class="btn sm" type="button" data-join="${m.p.id}">${t("join")}</button></div></div>`).join("")
+      :`<div class="empty" style="margin-top:16px">${t("smart_none")}</div>`;
+  };
+  $("#sgo").onclick=run;
+  $("#sq").onkeydown=e=>{if(e.key==="Enter")run()};
+  $$(".ex button").forEach(b=>b.onclick=()=>{$("#sq").value=b.textContent;run()});
+  if(sq)run();
+};
+
+let pf={cat:"",dist:"",type:""};
+VIEWS.prods=()=>{
+  $("#app").innerHTML=`<div class="head"><h1>${t("prods_t")}</h1><p class="lead">${t("prods_d")}</p></div>
+  <div class="filters">
+    <label>${t("f_cat")}<select id="fc"><option value="">${t("all")}</option>${catOpts(pf.cat)}</select></label>
+    <label>${t("f_dist")}<select id="fd"><option value="">${t("all")}</option>${distOpts(pf.dist)}</select></label>
+    <label>${t("f_type")}<select id="ft"><option value="">${t("all")}</option>${["farm","home","whole"].map(k=>`<option value="${k}" ${pf.type===k?"selected":""}>${TYPE_IC[k]} ${t("type_"+k)}</option>`).join("")}</select></label>
+  </div>
+  <div class="grid" id="pl" aria-live="polite"></div>`;
+  const draw=()=>{
+    const a=S.prods.filter(p=>(!pf.cat||p.cats.includes(pf.cat))&&(!pf.dist||p.dist===pf.dist)&&(!pf.type||p.type===pf.type)).sort((x,y)=>rating(y)-rating(x));
+    $("#pl").innerHTML=a.length?a.map(prodCard).join(""):`<div class="empty">${t("none")}</div>`;
+  };
+  [["fc","cat"],["fd","dist"],["ft","type"]].forEach(([id,k])=>$("#"+id).onchange=e=>{pf[k]=e.target.value;draw()});
+  draw();
+};
+
+const helpCard=()=>`<div class="helpcard">
+  <h2 style="font-size:26px">${t("help_card_t")}</h2>
+  <p style="font-size:20px">${t("help_d")}</p>
+  <div class="phone">+7 (___) ___-__-__</div><div class="meta">${t("help_num")}</div>
+  <button class="btn big orange" type="button" data-demo>${t("call")}</button>
+  <button class="btn big" type="button" data-demo>${t("wa")}</button>
+  <p class="note">🎤 ${t("help_soon")}</p></div>`;
+
+VIEWS.add=()=>{
+  const u=user();
+  let right;
+  if(!u)right=`<div class="panel fgrid"><h2 style="margin:0;font-size:26px">${t("seller_need_t")}</h2><p class="meta">${t("seller_need_d")}</p>
+    <a class="btn big wide" href="#reg" data-role="seller">${t("reg_seller")}</a><a class="btn ghost wide" href="#login" data-pend="add">${t("have_acc")}</a></div>`;
+  else if(u.role!=="seller")right=`<div class="panel fgrid"><p style="font-size:20px">${t("shop_cant")}</p><button class="btn ghost wide" type="button" data-logout>${t("logout")}</button></div>`;
+  else right=`<form class="panel fgrid" id="af" novalidate>
+      <div><h2 style="margin:0;font-size:26px">${t("form_t")}</h2><p class="meta">${esc(u.name)}</p></div>
+      <label>${t("a_item")}<input id="ai" name="item" maxlength="40" placeholder="${esc(t("a_item_ph"))}" autocomplete="off"></label>
+      <label>${t("a_cat")}<select id="ac">${catOpts("veg")}</select></label>
+      <div class="f2">
+        <label>${t("a_vol")}<input id="av" name="volume" type="number" min="1" inputmode="numeric"></label>
+        <label>${t("a_unit")}<select id="au"><option>кг</option><option>л</option></select></label>
+      </div>
+      <label>${t("a_price")}<input id="ap" name="price" type="number" min="1" inputmode="numeric"></label>
+      <label>${t("a_retail")}<span class="hint">${t("a_retail_h")}</span><input id="ar" name="retail" type="number" min="1" inputmode="numeric"></label>
+      <label>${t("a_days")}<select id="ad">${[3,5,7,10].map(n=>`<option value="${n}" ${n===5?"selected":""}>${tf("days_n",n)}</option>`).join("")}</select></label>
+      <div class="err" id="aErr" role="alert"></div>
+      <button class="btn big wide" type="submit">${t("a_go")}</button>
+    </form>`;
+  $("#app").innerHTML=`<div class="head"><h1>${t("add_t")}</h1><p class="lead">${t("add_d")}</p></div><div class="two">${helpCard()}${right}</div>`;
+  if(!u||u.role!=="seller")return;
+  // вид товара подбирается по названию
+  $("#ai").oninput=e=>{const w=e.target.value.toLowerCase().trim();const c=Object.keys(KW).find(k=>KW[k].some(s=>w.startsWith(s)));if(c)$("#ac").value=c};
+  $("#af").onsubmit=async e=>{
+    e.preventDefault();
+    const v=id=>$("#"+id).value.trim();
+    const item=v("ai"),vol=Math.round(+v("av")),price=Math.round(+v("ap")),retail=v("ar")?Math.round(+v("ar")):null;
+    if(!item||!(vol>0)||!(price>0))return showErr("aErr",t("err_add"),!item?"ai":!(vol>0)?"av":"ap");
+    if(retail!=null&&!(retail>price))return showErr("aErr",t("err_retail"),"ar");
+    const r=await withBusy(e.submitter,()=>API.addPool({item,cat:v("ac"),unit:v("au"),target:vol,price,retail,days:+v("ad")}));
+    if(r.err)return showErr("aErr",errText(r.err));
+    location.hash="#cab";
+    setTimeout(()=>okDlg(t("ok_add_t"),t("ok_add_d")),0);
+  };
+};
+
+let dv={from:"merke",kg:500,shops:4};
+VIEWS.deliv=()=>{
+  $("#app").innerHTML=`<div class="head"><h1>${t("deliv_t")}</h1><p class="lead">${t("deliv_d")}</p></div>
+  <div class="calc">
+    <div class="panel fgrid">
+      <label>${t("d_from")}<select id="df">${distOpts(dv.from)}</select></label>
+      <label>${t("d_kg")}<input id="dk" type="number" min="1" max="20000" value="${dv.kg}" inputmode="numeric"></label>
+      <div><span id="dsl" style="font-weight:600;font-size:17px">${t("d_shops")}</span>
+        <div class="counter" role="group" aria-labelledby="dsl"><button type="button" id="dm" aria-label="−1">−</button><output id="dn" aria-live="polite">${dv.shops}</output><button type="button" id="dp" aria-label="+1">+</button></div></div>
+      <p class="note">${t("d_tariff")}</p>
+    </div>
+    <div class="panel" id="dres" aria-live="polite"></div>
+  </div>
+  <section class="panel soft" style="margin-top:20px"><h3>${t("earn_t")}</h3><ul class="list">${t("earn").map(x=>`<li>${x}</li>`).join("")}</ul></section>`;
+  const upd=()=>{
+    dv.from=$("#df").value;dv.kg=Math.max(1,Math.round(+$("#dk").value||1));
+    $("#dn").textContent=dv.shops;
+    const d=dist(dv.from),trips=Math.ceil(dv.kg/CAP),solo=trip(d.km)*trips,shared=solo/dv.shops;
+    $("#dres").innerHTML=`
+      <div class="res-row"><span>${t("d_solo")}</span><b>${money(solo)}</b></div>
+      <div class="res-row"><span>${t("d_shared")}</span><b>${money(shared)}</b></div>
+      <div class="res-big"><span>${t("d_saved")}</span><b>${money(solo-shared)}</b></div>
+      <p class="note">🚚 ${tf("d_trips",trips)}</p>
+      <h3 style="margin-top:20px">${t("d_route")}</h3>
+      <ol class="route"><li><b>${esc(N(d))}</b></li>${Array.from({length:dv.shops},(_,i)=>`<li>${tf("d_shop",i+1)}</li>`).join("")}</ol>`;
+  };
+  $("#df").onchange=upd;$("#dk").oninput=upd;
+  $("#dm").onclick=()=>{dv.shops=Math.max(1,dv.shops-1);upd()};
+  $("#dp").onclick=()=>{dv.shops=Math.min(10,dv.shops+1);upd()};
+  upd();
+};
+
+/* ===== Вход и регистрация ===== */
+VIEWS.login=()=>{
+  $("#app").innerHTML=`<div class="narrow">
+  <div class="head"><h1>${t("login_t")}</h1><p class="lead">${t("login_d")}</p></div>
+  <form class="panel fgrid" id="lf" novalidate>
+    <label>${t("phone")}<input id="lp" name="phone" spellcheck="false" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 7__ ___ __ __" maxlength="20"></label>
+    <label>${t("pin")}<input id="lpin" name="pin" spellcheck="false" type="password" inputmode="numeric" autocomplete="current-password" maxlength="4" pattern="\\d{4}"></label>
+    <div class="err" id="lErr" role="alert"></div>
+    <button class="btn big wide" type="submit">${t("do_login")}</button>
+    <p>${t("no_acc")} <a href="#reg" style="font-weight:700;color:var(--brand)">${t("to_reg")}</a></p>
+    <p>${t("forgot")} <button class="link" type="button" data-help>${t("forgot_b")}</button></p>
+  </form>
+  <div class="demo" style="margin-top:16px"><b>${t("demo_t")}</b><br>${t(MODE==="cloud"?"demo_cloud":"demo_d")}</div></div>`;
+  $("#lf").onsubmit=async e=>{
+    e.preventDefault();
+    const ph=normPhone($("#lp").value),pin=$("#lpin").value.trim();
+    if(!ph||!/^\d{4}$/.test(pin))return showErr("lErr",t("err_login"),ph?"lpin":"lp");
+    const r=await withBusy(e.submitter,()=>API.login(ph,pin));
+    if(r.err)return showErr("lErr",errText(r.err),r.err==="err_login"?"lpin":null);
+    afterAuth(r.user);
+  };
+};
+
+let regRole="shop";
+VIEWS.reg=()=>{
+  const sel=regRole==="seller";
+  $("#app").innerHTML=`<div class="narrow">
+  <div class="head"><h1>${t("reg_t")}</h1><p class="lead">${t("reg_d")}</p></div>
+  <div class="roles" role="group" aria-label="${t("reg_d")}" style="margin-bottom:18px">
+    <button class="role" type="button" data-r="shop" aria-pressed="${!sel}"><b>${t("role_shop")}</b><span>${t("role_shop_d")}</span></button>
+    <button class="role" type="button" data-r="seller" aria-pressed="${sel}"><b>${t("role_seller")}</b><span>${t("role_seller_d")}</span></button>
+  </div>
+  <form class="panel fgrid" id="rf" novalidate>
+    <label>${sel?t("r_name_seller"):t("r_name_shop")}<input id="rn" name="name" maxlength="60" autocomplete="${sel?"name":"organization"}"></label>
+    <label>${t("phone")}<input id="rp" name="phone" spellcheck="false" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 7__ ___ __ __" maxlength="20"></label>
+    ${sel?`<label>${t("r_type")}<select id="rt">${["home","farm","whole"].map(k=>`<option value="${k}">${TYPE_IC[k]} ${t("type_"+k)}</option>`).join("")}</select></label>
+    <label>${t("r_dist")}<select id="rd">${distOpts("asa")}</select></label>`:""}
+    <div class="f2">
+      <label>${t("pin")}<input id="rpin" name="pin" spellcheck="false" type="password" inputmode="numeric" autocomplete="new-password" maxlength="4"></label>
+      <label>${t("pin2")}<input id="rpin2" name="pin2" spellcheck="false" type="password" inputmode="numeric" autocomplete="new-password" maxlength="4"></label>
+    </div>
+    <div class="err" id="rErr" role="alert"></div>
+    <button class="btn big wide" type="submit">${t("do_reg")}</button>
+    <p>${t("have")} <a href="#login" style="font-weight:700;color:var(--brand)">${t("login_btn")}</a></p>
+  </form></div>`;
+  $$(".role").forEach(b=>b.onclick=()=>{regRole=b.dataset.r;render()});
+  $("#rf").onsubmit=async e=>{
+    e.preventDefault();
+    const name=$("#rn").value.trim(),ph=normPhone($("#rp").value),pin=$("#rpin").value.trim(),pin2=$("#rpin2").value.trim();
+    if(name.length<2)return showErr("rErr",t("err_name"),"rn");
+    if(!ph)return showErr("rErr",t("err_phone"),"rp");
+    if(!/^\d{4}$/.test(pin))return showErr("rErr",t("err_pin"),"rpin");
+    if(pin!==pin2)return showErr("rErr",t("err_pin2"),"rpin2");
+    const r=await withBusy(e.submitter,()=>API.register({role:regRole,name,phone:ph,pin,type:sel?$("#rt").value:null,dist:sel?$("#rd").value:null}));
+    if(r.err)return showErr("rErr",errText(r.err),r.err==="err_phone_used"?"rp":null);
+    afterAuth(r.user,true);
+  };
+};
+
+function afterAuth(u,isNew){
+  const p=pending;pending=null;
+  if(p&&p.join&&u.role==="shop"){goTo("#pools");setTimeout(()=>joinDlg(p.join),0);return}
+  if(p&&p.route){goTo("#"+p.route);return}
+  if(isNew){
+    goTo(u.role==="seller"?"#add":"#pools");
+    setTimeout(()=>okDlg(t("ok_reg_t"),u.role==="seller"?t("ok_reg_seller"):t("ok_reg_shop")),0);
+    return;
+  }
+  goTo("#cab");
+}
+async function logout(){await API.logout();pending=null;goTo("#home")}
+
+/* ===== Кабинет ===== */
+const stepper=s=>{const i={wait:0,ready:1,shipped:2,done:3}[s];return `<div class="stp">${[0,1,2,3].map(k=>`<span class="${k<=i?"on":""}">${k<=i?"✓ ":""}${t("st"+k)}</span>`).join("")}</div>`};
+
+VIEWS.cab=()=>{
+  const u=user();
+  if(!u){pending={route:"cab"};return VIEWS.login()}
+  const head=`<div class="head row"><div><h1>${tf("hi",esc(u.name))}</h1><p class="lead">${u.role==="shop"?t("cab_shop_d"):t("cab_seller_d")}</p><p class="meta" style="margin-top:6px">${u.role==="shop"?t("acc_shop"):t("acc_seller")} · ${fmtPhone(u.phone)}</p></div>
+    <button class="btn ghost" type="button" data-logout>${t("logout")}</button></div>`;
+  const foot=MODE==="local"?`<button class="btn sm ghost" type="button" id="rs" style="margin-top:24px">${t("reset")}</button>`:"";
+  u.role==="shop"?shopCab(u,head,foot):sellerCab(u,head,foot);
+  const rs=$("#rs");if(rs)rs.onclick=()=>{if(confirm(t("reset_q"))){S=fresh();save();logout()}};
+};
+
+function shopCab(u,head,foot){
+  const os=S.orders.filter(o=>o.user===u.id),act=os.filter(live);
+  const spent=act.reduce((s,o)=>s+o.total,0),saved=act.reduce((s,o)=>s+Math.max(0,o.saved||0),0);
+  $("#app").innerHTML=`${head}
+  <div class="kpis" style="margin:0 0 24px">
+    <div><b>${act.length}</b><span>${t("cab_orders")}</span></div>
+    <div><b>${money(spent)}</b><span>${t("cab_spent")}</span></div>
+    <div><b style="color:var(--brand)">${money(saved)}</b><span>${t("cab_saved")}</span></div>
+  </div>
+  <div id="ol">${os.length?os.map(o=>{
+    const p=pool(o.pool),pr=prod(p.prod),ow=prodUser(pr);
+    return `<div class="card ${o.status}">
+      <div class="row"><h3>${CAT[p.cat].i} ${esc(N(p.item))} — ${num(o.qty)} ${p.unit}</h3><b class="num">${money(o.total)}</b></div>
+      <div class="meta">${t("seller")}: ${esc(pr.name)}${ow&&o.status!=="cancelled"?` · ${fmtPhone(ow.phone)}`:""}${o.saved?` · ${t("sum_saved").toLowerCase()} <b style="color:var(--brand)">${money(Math.max(0,o.saved))}</b>`:""}</div>
+      <p style="margin-top:8px"><span class="badge ${o.status}">${t("ost_"+o.status)}</span>${o.status==="wait"?` <span class="meta">· ${tf("left_to",num(p.target-p.got)+" "+p.unit)} · ${daysLeft(p)}</span>`:""}</p>
+      ${o.status==="cancelled"?"":stepper(o.status)}
+      ${o.status==="wait"?`<div class="acts"><a class="btn sm" href="#pools" data-addmore="${p.id}">${t("add_more")}</a><button class="btn sm red" type="button" data-cancel="${o.id}">${t("o_cancel")}</button></div>`:""}
+      ${o.status==="shipped"?`<div class="acts"><button class="btn" type="button" data-recv="${o.id}">${t("o_receive")}</button></div>`:""}
+      ${o.status==="done"?(o.rev?`<p style="margin-top:8px">${t("rated")} <span class="stars">${"★".repeat(o.rev)}</span></p>`
+        :`<div class="rate"><b style="margin-right:8px">${t("rate")}</b>${[1,2,3,4,5].map(n=>`<button type="button" data-rate="${o.id}" data-n="${n}" aria-label="${n} / 5">★</button>`).join("")}</div>`):""}
+    </div>`}).join(""):`<div class="empty">${t("cab_empty")}<br><a class="btn" style="margin-top:16px" href="#pools">${t("go_pools")}</a></div>`}</div>${foot}`;
+  $("#ol").onclick=e=>{
+    const find=a=>S.orders.find(x=>x.id===e.target.closest("["+a+"]").getAttribute(a));
+    if(e.target.closest("[data-addmore]")){e.preventDefault();const id=e.target.closest("[data-addmore]").dataset.addmore;goTo("#pools");setTimeout(()=>joinDlg(id),0);return}
+    if(e.target.closest("[data-cancel]")){const o=find("data-cancel");
+      if(o.status!=="wait"||!confirm(t("o_cancel_q")))return;
+      return doAction(API.cancelOrder(o.id),t("t_cancelled"))}
+    if(e.target.closest("[data-recv]")){const o=find("data-recv");if(o.status!=="shipped")return;return doAction(API.receive(o.id))}
+    if(e.target.closest("[data-rate]")){const b=e.target.closest("[data-rate]"),o=find("data-rate"),n=+b.dataset.n;
+      if(o.status!=="done"||o.rev)return;
+      return doAction(API.rate(o.id,n,L[lang][n>=4?"rev_good":n===3?"rev_mid":"rev_bad"]),t("t_thanks"))}
+  };
+}
+
+function sellerCab(u,head,foot){
+  const pr=prod(u.prod),ps=S.pools.filter(p=>p.prod===pr.id);
+  const ordersN=ps.reduce((s,p)=>s+poolOrders(p).length,0);
+  $("#app").innerHTML=`${head}
+  <div class="kpis" style="margin:0 0 24px">
+    <div><b>${ps.filter(p=>p.status==="open").length}</b><span>${t("k_active")}</span></div>
+    <div><b>${ordersN}</b><span>${t("k_orders")}</span></div>
+    <div><b>${rating(pr)?"★ "+rating(pr).toFixed(1):"—"}</b><span>${t("k_rating")}</span></div>
+  </div>
+  <div class="row" style="margin-bottom:16px"><h2 style="margin:0">${t("my_pools")}</h2><a class="btn" href="#add">${t("add_new")}</a></div>
+  <div id="sl">${ps.length?ps.map(p=>{
+    const os=poolOrders(p),pct=Math.min(100,Math.round(p.got/p.target*100)),got=os.filter(o=>o.status==="done").length;
+    return `<div class="card ${p.status}">
+      <div class="row"><h3>${CAT[p.cat].i} ${esc(N(p.item))} · ${money(p.price)} ${t("per")} ${p.unit}</h3><span class="badge ${p.status}">${t("pst_"+p.status)}</span></div>
+      <div class="prog" style="margin-top:12px" role="progressbar" aria-label="${pct}%" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="transform:scaleX(${pct/100})"></i></div>
+      <div class="row meta" style="margin-top:6px"><span>${num(p.got)} / ${num(p.target)} ${p.unit} (${pct}%)</span>${p.status==="open"?`<span>⏳ ${daysLeft(p)}</span>`:""}</div>
+      <h3 style="margin-top:14px;font-size:18px">${t("buyers")}</h3>
+      <ul class="buyers">${os.map(o=>{const b=S.users.find(x=>x.id===o.user);return `<li><span>🏪 ${esc(b?b.name:"—")}${b?` · ${fmtPhone(b.phone)}`:""}</span><b>${num(o.qty)} ${p.unit} <span class="badge ${o.status}">${t("st"+{wait:0,ready:1,shipped:2,done:3}[o.status])}</span></b></li>`}).join("")}
+        ${p.extra?`<li class="meta">${tf("demo_buyers",p.extra)}</li>`:""}${!os.length&&!p.extra?`<li class="meta">${t("no_buyers")}</li>`:""}</ul>
+      ${p.status==="shipped"?`<p class="note">${tf("p_received",{a:got,b:os.length})}</p>`:""}
+      <div class="acts">
+        ${p.status==="full"?`<button class="btn" type="button" data-ship="${p.id}">${t("p_ship")}</button>`:""}
+        ${p.status==="open"?`<button class="btn sm red" type="button" data-pcancel="${p.id}">${t("p_cancel")}</button>`:""}
+      </div>
+    </div>`}).join(""):`<div class="empty">${t("seller_empty")}<br><a class="btn" style="margin-top:16px" href="#add">${t("add_new")}</a></div>`}</div>
+  ${pr.rev.length?`<h2 style="margin-top:32px">${t("reviews")}</h2>${pr.rev.map(r=>`<div class="rev"><b>${esc(r[0])}</b> <span class="stars">${"★".repeat(r[2])}</span><br>${esc(r[1])}</div>`).join("")}`:""}
+  ${foot}`;
+  $("#sl").onclick=e=>{
+    const s=e.target.closest("[data-ship]"),c=e.target.closest("[data-pcancel]");
+    if(s){const p=pool(s.dataset.ship);if(p.status!=="full")return;
+      doAction(API.ship(p.id)).then(r=>{if(!r.err)okDlg(t("ok_ship_t"),t("ok_ship_d"))})}
+    if(c){const p=pool(c.dataset.pcancel);if(p.status!=="open"||!confirm(t("p_cancel_q")))return;
+      doAction(API.cancelPool(p.id),t("t_cancelled"))}
+  };
+}
+
+/* ===== Шапка, меню, подвал, язык ===== */
+function closeMenu(){$("#menu").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false")}
+function render(){
+  API.tick();
+  $("#banner").innerHTML=offline?`<div class="banner" role="status">${t("offline_banner")}</div>`:"";
+  const u=user();
+  document.documentElement.lang=lang==="kz"?"kk":"ru";
+  $("#lang").textContent=t("lang_btn");
+  $("#helpBtn").textContent=t("help_btn");
+  $("#menuBtn").textContent=t("menu");
+  $("#fab b").textContent=t("fab");
+  $("#fab").setAttribute("aria-label",t("help_t"));
+  const acc=$("#accBtn");
+  acc.textContent=u?"👤 "+u.name:t("login_btn");acc.href=u?"#cab":"#login";acc.classList.toggle("in",!!u);
+  const cur=k=>route===k||(k==="cab"&&(route==="login"||route==="reg"));
+  $("#nav").innerHTML=NAV.map(([k])=>`<a href="#${k}" class="${cur(k)?"on":""}"${cur(k)?' aria-current="page"':""}>${t("nav_"+k)}</a>`).join("");
+  $("#menu").innerHTML=`<div class="mtop"><b style="font-size:24px">${t("menu_t")}</b><button class="hbtn" type="button" id="menuX">${t("close")}</button></div>
+    ${NAV.map(([k,ic])=>`<a href="#${k}" class="mi ${cur(k)?"on":""}"><i aria-hidden="true">${ic}</i>${t("nav_"+k)}</a>`).join("")}
+    ${u?`<button class="btn ghost wide" type="button" data-logout style="margin-top:6px">${t("logout")} (${esc(u.name)})</button>`:`<a class="btn big wide" href="#login" style="margin-top:6px">${t("login_btn")}</a>`}
+    <button class="btn big orange wide" type="button" data-help style="margin-top:10px">${t("help_btn")}</button>
+    <button class="btn ghost wide" type="button" id="lang2" style="margin-top:10px">${t("lang_full")}</button>`;
+  $("#menuX").onclick=closeMenu;
+  $("#lang2").onclick=switchLang;
+  $("#foot").innerHTML=`<div class="fgrid4">
+    <div><b style="font-size:20px">Supply<span style="color:var(--brand)">Match</span></b><p>${t("foot_d")}</p><p style="margin-top:12px">${t("foot_team")}</p></div>
+    <div><b>${t("foot_sec")}</b>${NAV.map(([k])=>`<a href="#${k}">${t("nav_"+k)}</a>`).join("")}</div>
+    <div><b>${t("foot_help")}</b><button class="link" type="button" data-help style="padding:4px 0">${t("help_btn")}</button><a href="#home" data-faq>${t("faq_t")}</a><p style="margin-top:12px">${t(MODE==="cloud"?"foot_cloud":"foot_demo")}</p></div>
+  </div>`;
+  VIEWS[route]();
+}
+function switchLang(){lang=lang==="ru"?"kz":"ru";store.set("sm_lang",lang);closeMenu();render()}
+function go(){
+  const r=location.hash.slice(1);
+  route=VIEWS[r]?r:"home";
+  if(route==="login"||route==="reg"){if(user()){location.replace("#cab");return}}
+  else pending=null; // ушли в другой раздел — забываем, куда хотели вернуться
+  closeMenu();if(dlg.open)dlg.close();render();window.scrollTo(0,0);
+}
+$("#lang").onclick=switchLang;
+$("#menuBtn").onclick=()=>{$("#menu").classList.add("open");$("#menuBtn").setAttribute("aria-expanded","true");$("#menuX").focus()};
+document.addEventListener("click",e=>{
+  const el=s=>e.target.closest(s);
+  if(el("[data-join]"))return joinClick(el("[data-join]").dataset.join);
+  if(el("[data-prod]"))return prodDlg(el("[data-prod]").dataset.prod);
+  if(el("[data-help]")){closeMenu();return helpDlg()}
+  if(el("[data-demo]"))return toast(t("t_demo"));
+  if(el("[data-logout]")){closeMenu();if(dlg.open)dlg.close();return logout()}
+  if(el("[data-role]"))regRole=el("[data-role]").dataset.role;
+  if(el("[data-pend]"))pending={route:el("[data-pend]").dataset.pend};
+  if(el("[data-faq]")){e.preventDefault();goTo("#home");setTimeout(()=>{const f=$(".faq");if(f)f.scrollIntoView()},0);return}
+  if(el("[data-close]"))dlg.close();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMenu()});
+// данные меняются в другой вкладке — перерисовываем
+addEventListener("storage",e=>{if(MODE!=="local")return;if(e.key==="sm_state3"||e.key==="sm_me"){S=store.get("sm_state3")||fresh();me=store.get("sm_me");render()}});
+async function boot(){
+  $("#app").innerHTML=`<p class="meta" style="padding:64px 0;text-align:center">${t("loading")}</p>`;
+  const want=SUPABASE_URL&&SUPABASE_KEY&&!/[?&]offline\b/.test(location.search);
+  if(want){
+    MODE="cloud";API=CloudAPI;
+    try{await CloudAPI.init()}catch(e){console.warn("Supabase недоступен — включаю оффлайн-демо",e);MODE="local";offline=true}
+  }
+  if(MODE==="local"){API=LocalAPI;await LocalAPI.init()}
+  addEventListener("hashchange",go);
+  go();
+}
+boot();
+</script>
+</body>
+</html>
